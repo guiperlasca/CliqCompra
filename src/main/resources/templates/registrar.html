@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register - CliqCompra</title>
+</head>
+<body>
+    <h1>User Registration</h1>
+    <form action="#" th:action="@{/api/usuarios}" method="post"> <!-- Will point to API later -->
+        <div><label>Name: <input type="text" name="nome"/></label></div>
+        <div><label>Email: <input type="email" name="email"/></label></div>
+        <div><label>Password: <input type="password" name="senhaHash"/></label></div> <!-- NB: senhaHash is not ideal for form name -->
+        <div><label>CPF/CNPJ: <input type="text" name="cpfCnpj"/></label></div>
+        <div><button type="submit">Register</button></div>
+    </form>
+    <p><a th:href="@{/}">Back to Home</a></p>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Products - CliqCompra</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+</head>
+<body>
+    <h1>Our Products</h1>
+
+    <div th:if="${#lists.isEmpty(produtos)}">
+        <p>No products available at the moment.</p>
+    </div>
+
+    <table th:unless="${#lists.isEmpty(produtos)}">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="produto : ${produtos}">
+                <td th:text="${produto.nome}">Product Name</td>
+                <td th:text="${#numbers.formatCurrency(produto.preco)}">0.00</td>
+                <td th:text="${produto.descricao}">Product Description</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><a th:href="@{/}">Back to Home</a></p>
+</body>
+</html>
