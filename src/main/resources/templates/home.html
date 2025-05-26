@@ -1,13 +1,22 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 <head>
-    <title>CliqCompra - Home</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+    <title>Home</title> <!-- This will be used by layout:title-pattern -->
 </head>
 <body>
-    <h1>Welcome to CliqCompra!</h1>
-    <p><a th:href="@{/registrar}">Register</a></p>
-    <p><a th:href="@{/login}">Login</a></p>
-    <p><a th:href="@{/produtos}">View Products</a></p>
+    <section layout:fragment="content">
+        <h1>Welcome to CliqCompra!</h1>
+        <p>This is the main content area of the home page. Explore our site using the navigation above.</p>
+        <!-- Specific calls to action or featured content for the home page can go here -->
+        <!-- For example, if these links are specific to the home page content: -->
+        <p>Ready to get started?</p>
+        <ul>
+            <li><a th:href="@{/registrar}">Register for an account</a></li>
+            <li><a th:href="@{/produtos}">Browse our products</a></li>
+            <li><a th:href="@{/login}">Login to your account</a></li>
+        </ul>
+    </section>
 </body>
 </html>

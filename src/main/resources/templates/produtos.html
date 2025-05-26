@@ -1,33 +1,35 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 <head>
-    <title>Products - CliqCompra</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+    <title>Products</title>
 </head>
 <body>
-    <h1>Our Products</h1>
+    <section layout:fragment="content">
+        <h1>Our Products</h1>
 
-    <div th:if="${#lists.isEmpty(produtos)}">
-        <p>No products available at the moment.</p>
-    </div>
+        <div th:if="${#lists.isEmpty(produtos)}">
+            <p>No products available at the moment.</p>
+        </div>
 
-    <table th:unless="${#lists.isEmpty(produtos)}">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="produto : ${produtos}">
-                <td th:text="${produto.nome}">Product Name</td>
-                <td th:text="${#numbers.formatCurrency(produto.preco)}">0.00</td>
-                <td th:text="${produto.descricao}">Product Description</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <p><a th:href="@{/}">Back to Home</a></p>
+        <table th:unless="${#lists.isEmpty(produtos)}">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="produto : ${produtos}">
+                    <td th:text="${produto.nome}">Product Name</td>
+                    <td th:text="${#numbers.formatCurrency(produto.preco)}">0.00</td>
+                    <td th:text="${produto.descricao}">Product Description</td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- The "Back to Home" link is already in the layout's header -->
+    </section>
 </body>
 </html>

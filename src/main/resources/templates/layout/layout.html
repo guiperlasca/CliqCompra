@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">CliqCompra</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
+    <!-- Other common head elements can go here -->
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>CliqCompra</h1>
+            <nav>
+                <ul>
+                    <li><a th:href="@{/}">Home</a></li>
+                    <li><a th:href="@{/produtos}">Products</a></li>
+                    <li><a th:href="@{/registrar}">Register</a></li>
+                    <li><a th:href="@{/login}">Login</a></li>
+                    <!-- More links can be added here, e.g., for user profile, cart -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Page-specific content will be inserted here -->
+        <section layout:fragment="content">
+            <p>This is placeholder content from the layout file. It should be replaced by page-specific content.</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 CliqCompra. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 <head>
-    <title>Login - CliqCompra</title>
+    <title>Login</title>
 </head>
 <body>
-    <h1>Login</h1>
-    <form action="#" method="post"> <!-- Actual login processing to be defined -->
-        <div><label>Email: <input type="email" name="email"/></label></div>
-        <div><label>Password: <input type="password" name="password"/></label></div>
-        <div><button type="submit">Login</button></div>
-    </form>
-    <p><a th:href="@{/}">Back to Home</a></p>
+    <section layout:fragment="content">
+        <h1>Login</h1>
+        <form action="#" th:action="@{/login}" method="post"> <!-- Ensure th:action points to your login processing URL -->
+            <div><label for="email">Email:</label> <input type="email" id="email" name="email"/></div>
+            <div><label for="password">Password:</label> <input type="password" id="password" name="password"/></div>
+            <div><button type="submit">Login</button></div>
+        </form>
+        <!-- The "Back to Home" link is already in the layout's header -->
+    </section>
 </body>
 </html>
