@@ -1,4 +1,4 @@
 package com.trabalho.cliqaqui.model;
 
-public class CliqModel {
+public class ModeloCliqaqui {
 }

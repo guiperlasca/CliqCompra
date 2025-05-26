@@ -1,4 +1,4 @@
 package com.trabalho.cliqaqui.dto;
 
-public class CliqMinDTO {
+public class DTOMinimoCliqaqui {
 }

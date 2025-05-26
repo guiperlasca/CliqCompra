@@ -1,4 +1,4 @@
 package com.trabalho.cliqaqui.controller;
 
-public class CliqController {
+public class ControleCliqaqui {
 }
