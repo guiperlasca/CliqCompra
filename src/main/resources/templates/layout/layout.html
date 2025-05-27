@@ -15,9 +15,39 @@
                 <ul>
                     <li><a th:href="@{/}">Home</a></li>
                     <li><a th:href="@{/produtos}">Products</a></li>
-                    <li><a th:href="@{/registrar}">Register</a></li>
-                    <li><a th:href="@{/login}">Login</a></li>
-                    <!-- More links can be added here, e.g., for user profile, cart -->
+
+                    <!-- If user is NOT logged in -->
+                    <li th:if="${!isUserLoggedIn}">
+                        <a th:href="@{/registrar}">Register</a>
+                    </li>
+                    <li th:if="${!isUserLoggedIn}">
+                        <a th:href="@{/login}">Login</a>
+                    </li>
+
+                    <!-- If user IS logged in -->
+                    <th:block th:if="${isUserLoggedIn}">
+                        <li>
+                            <span style="color: #fff; margin-right: 15px;">
+                                Welcome, <span th:text="${loggedInUserEmail}"></span> (<span th:text="${loggedInUserType}"></span>)
+                            </span>
+                        </li>
+
+                        <!-- Vendedor Specific Links -->
+                        <th:block th:if="${loggedInUserType == 'VENDEDOR'}">
+                            <li><a th:href="@{/vendedor/produtos/add}">Add Product</a></li>
+                            <li><a th:href="@{/vendedor/produtos/my}">My Products</a></li>
+                        </th:block>
+
+                        <!-- Cliente Specific Links -->
+                        <th:block th:if="${loggedInUserType == 'CLIENTE'}">
+                            <li><a th:href="@{/cart}">My Cart</a></li>
+                            <li><a th:href="@{/cliente/pedidos}">My Orders</a></li>
+                        </th:block>
+
+                        <li>
+                            <a th:href="@{/logout}">Logout</a>
+                        </li>
+                    </th:block>
                 </ul>
             </nav>
         </div>

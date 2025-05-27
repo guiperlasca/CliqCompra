@@ -42,14 +42,7 @@ public class PedidoService {
     }
 
     public List<Pedido> listarPedidosPorCliente(Integer clienteId) {
-        Optional<Cliente> clienteOptional = clienteRepository.findById(clienteId);
-        if (clienteOptional.isPresent()) {
-            // Assuming Pedido has a direct or indirect way to query by Cliente ID
-            // This might require a custom query in PedidoRepository, e.g., findByClienteId(Integer clienteId)
-            // For now, if Cliente entity holds a list of its pedidos:
-             return clienteOptional.get().getPedidos();
-        }
-        return Collections.emptyList(); // Or throw exception
+        return pedidoRepository.findByClienteIdOrderByDataRealizacaoDesc(clienteId);
     }
 
     // Additional methods for PedidoService as needed, e.g.,

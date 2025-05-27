@@ -154,3 +154,20 @@ table tr:nth-child(even) {
     background-color: #f8d7da;
     border-color: #f5c6cb;
 }
+
+/* Navigation Logout Button Styling */
+.nav-logout-button {
+    background: none;
+    border: none;
+    color: #fff; /* Assuming white nav text from previous styling */
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0;
+    display: inline;
+    font-size: inherit; /* Inherit font size from nav link */
+    font-family: inherit; /* Inherit font family */
+}
+
+.nav-logout-button:hover {
+    text-decoration: underline;
+}

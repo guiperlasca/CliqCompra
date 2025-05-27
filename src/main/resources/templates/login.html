@@ -8,12 +8,36 @@
 <body>
     <section layout:fragment="content">
         <h1>Login</h1>
-        <form action="#" th:action="@{/login}" method="post"> <!-- Ensure th:action points to your login processing URL -->
-            <div><label for="email">Email:</label> <input type="email" id="email" name="email"/></div>
-            <div><label for="password">Password:</label> <input type="password" id="password" name="password"/></div>
-            <div><button type="submit">Login</button></div>
+
+        <!-- Login Success Message -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <p th:text="${successMessage}"></p>
+        </div>
+
+        <!-- Logout Message -->
+        <div th:if="${logoutMessage}" class="alert alert-info">
+            <p th:text="${logoutMessage}"></p>
+        </div>
+
+        <!-- Login Error Message -->
+        <div th:if="${loginError}" class="alert alert-danger">
+            <p th:text="${loginError}"></p>
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required autofocus />
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div>
+                <button type="submit">Login</button>
+            </div>
         </form>
-        <!-- The "Back to Home" link is already in the layout's header -->
+        <p>New user? <a th:href="@{/registrar}">Register here</a>.</p>
     </section>
 </body>
 </html>
