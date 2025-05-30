@@ -5,6 +5,7 @@ public class UsuarioDTO {
     private String email;
     private String senha; // Plain text password from form
     private String cpfCnpj;
+    private String userType;
 
     public UsuarioDTO() {
     }
@@ -40,5 +41,13 @@ public class UsuarioDTO {
 
     public void setCpfCnpj(String cpfCnpj) {
         this.cpfCnpj = cpfCnpj;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 }

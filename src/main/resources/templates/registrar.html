@@ -33,6 +33,19 @@
                 <input type="password" id="senha" th:field="*{senha}"/>
             </div>
             <div>
+                <label>Register as:</label>
+                <div>
+                    <input type="radio" id="typeCliente" th:field="*{userType}" value="CLIENTE" checked="checked" />
+                    <label for="typeCliente">Cliente</label>
+                </div>
+                <div>
+                    <input type="radio" id="typeVendedor" th:field="*{userType}" value="VENDEDOR" />
+                    <label for="typeVendedor">Vendedor</label>
+                </div>
+                <!-- Display validation error for userType if any -->
+                <div th:if="${#fields.hasErrors('userType')}" th:errors="*{userType}" style="color: red; font-size: 0.9em;">User type error</div>
+            </div>
+            <div>
                 <label for="cpfCnpj">CPF/CNPJ:</label>
                 <input type="text" id="cpfCnpj" th:field="*{cpfCnpj}"/>
             </div>

@@ -87,32 +87,55 @@ public class WebController {
     }
 
     @PostMapping("/registrar")
-    public String processRegistration(@ModelAttribute("usuarioDto") UsuarioDTO usuarioDto, Model model /*, RedirectAttributes redirectAttributes */) {
+    public String processRegistration(@ModelAttribute("usuarioDto") UsuarioDTO usuarioDto, Model model, HttpSession session /*, RedirectAttributes redirectAttributes */) {
         // TODO: Add validation for usuarioDto (e.g., using @Valid and BindingResult)
 
-        // Convert DTO to Entity
-        // FIXME: This will cause an error because Usuario is abstract.
-        // We need to decide whether to register a Cliente or Vendedor, or change Usuario to be concrete.
-        // For now, let's assume we are registering a Cliente.
-        // This part will need to be adjusted based on actual registration logic (e.g., if it's always a Cliente).
-        Usuario novoUsuario = new com.trabalho.cliqaqui.model.Cliente(); // Example: creating a Cliente instance
+        Usuario novoUsuario;
+        String userType = usuarioDto.getUserType();
+
+        if ("VENDEDOR".equalsIgnoreCase(userType)) {
+            novoUsuario = new com.trabalho.cliqaqui.model.Vendedor();
+        } else if ("CLIENTE".equalsIgnoreCase(userType)) {
+            novoUsuario = new com.trabalho.cliqaqui.model.Cliente();
+        } else {
+            // Handle invalid or missing userType - redirect back with error
+            model.addAttribute("errorMessage", "Invalid account type selected. Please select Cliente or Vendedor.");
+            model.addAttribute("usuarioDto", usuarioDto); // Send DTO back to repopulate form
+            // Ensure other necessary model attributes for the 'registrar' page are present
+            String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+            if (loggedInUserEmail != null) {
+                model.addAttribute("isUserLoggedIn", true);
+                model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+            } else {
+                model.addAttribute("isUserLoggedIn", false);
+            }
+            return "registrar";
+        }
+
+        // Set common properties
         novoUsuario.setNome(usuarioDto.getNome());
         novoUsuario.setEmail(usuarioDto.getEmail());
-        // Encode the password using PasswordService
-        novoUsuario.setSenhaHash(passwordService.hashPassword(usuarioDto.getSenha()));
+        novoUsuario.setSenhaHash(passwordService.hashPassword(usuarioDto.getSenha())); // Encode password
         novoUsuario.setCpfCnpj(usuarioDto.getCpfCnpj());
-        // novoUsuario.setTelefones(new ArrayList<>()); // Initialize if needed, or handle from DTO if field was present
+        // novoUsuario.setTelefones(new ArrayList<>()); // Initialize if needed
 
         try {
             usuarioService.salvarUsuario(novoUsuario);
             // redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please login.");
             return "redirect:/login"; // Redirect to login page on success
         } catch (Exception e) {
-            // TODO: More specific error handling (e.g., for duplicate email)
-            // For now, just re-render the form with a generic error message
-            // model.addAttribute("errorMessage", "Registration failed: " + e.getMessage());
-            model.addAttribute("errorMessage", "Registration failed. Please try again."); // Simplified
+            // TODO: More specific error handling (e.g., for duplicate email, or other DB constraints)
+            // For now, re-render the form with a generic error message
+            model.addAttribute("errorMessage", "Registration failed: " + e.getMessage()); // Provide more specific error
             model.addAttribute("usuarioDto", usuarioDto); // Send the DTO back to repopulate the form
+            // Re-populate login status for layout consistency on error page
+            String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+            if (loggedInUserEmail != null) {
+                model.addAttribute("isUserLoggedIn", true);
+                model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+            } else {
+                model.addAttribute("isUserLoggedIn", false);
+            }
             return "registrar"; // Return to registration page with error
         }
     }
@@ -263,6 +286,7 @@ public class WebController {
             }
             return "vendedor/add-product"; // Return to form
         }
+    }
 
     @GetMapping("/vendedor/produtos/my")
     public String showMyProducts(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
@@ -290,6 +314,7 @@ public class WebController {
 
         return "vendedor/my-products";
     }
+    // } Closing brace removed here
 
     @PostMapping("/cart/add/{productId}")
     public String addToCart(@PathVariable("productId") Integer productId,
@@ -481,6 +506,7 @@ public class WebController {
             redirectAttributes.addFlashAttribute("errorMessage", "Error placing order. Please try again. " + e.getMessage());
             return "redirect:/checkout/confirm";
         }
+    } // Closing brace removed here
 
     @GetMapping("/checkout/order/{orderId}/confirmation")
     public String showOrderConfirmationPage(@PathVariable("orderId") Integer orderId,
@@ -523,6 +549,7 @@ public class WebController {
         }
         return "checkout/order-confirmation";
    }
+   // } Closing brace removed here
 
     @GetMapping("/cliente/pedidos")
     public String showMyOrders(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
@@ -544,6 +571,6 @@ public class WebController {
         
         return "cliente/my-orders";
     }
-    }
-    }
+    // } Removed one extra brace here
+// } Removed another extra brace here
 }
