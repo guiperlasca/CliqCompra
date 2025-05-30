@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Order Confirmation</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <h1>Order Confirmation</h1>
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger"> <!-- For errors like order not found -->
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <div th:if="${pedido}">
+            <h2>Thank you for your order!</h2>
+            <p><strong>Order ID:</strong> <span th:text="${pedido.id}">[Order ID]</span></p>
+            <p><strong>Order Date:</strong> <span th:text="${#temporals.format(pedido.dataRealizacao.toInstant(), 'dd-MMM-yyyy HH:mm')}">[Order Date]</span></p>
+            <p><strong>Order Total:</strong> <span th:text="${#numbers.formatCurrency(pedido.valorTotal)}">[Order Total]</span></p>
+            <p><strong>Status:</strong> <span th:text="${pedido.status}">[Order Status]</span></p>
+
+            <h3>Shipping Address:</h3>
+            <p th:if="${pedido.enderecoEntrega}">
+                <span th:text="${pedido.enderecoEntrega.rua} + ', ' + ${pedido.enderecoEntrega.numero}"></span><br/>
+                <span th:text="${pedido.enderecoEntrega.bairro}"></span><br/>
+                <span th:text="${pedido.enderecoEntrega.cidade} + ', ' + ${pedido.enderecoEntrega.estado} + ' - ' + ${pedido.enderecoEntrega.cep}"></span>
+            </p>
+
+            <h3>Items Ordered:</h3>
+            <table class="table" th:if="${pedido.itens != null and !#lists.isEmpty(pedido.itens)}">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${pedido.itens}">
+                        <td th:text="${item.produto?.nome ?: 'Product Name Unavailable'}">Product Name</td>
+                        <td th:text="${item.quantidade}">1</td>
+                        <td th:text="${#numbers.formatCurrency(item.precoUnitarioMomentoCompra)}">$0.00</td>
+                        <td th:text="${#numbers.formatCurrency(item.subtotal)}">$0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr/>
+            <p>
+                <a th:href="@{/produtos}" class="btn btn-primary">Continue Shopping</a>
+                <a th:href="@{/cliente/pedidos}" class="btn btn-info" style="margin-left:10px;">View My Orders</a> <!-- Placeholder for future page -->
+            </p>
+        </div>
+        <div th:unless="${pedido}">
+             <p th:if="${!errorMessage}">Loading order details or order not found.</p>
+             <p><a th:href="@{/}">Go to Homepage</a></p>
+        </div>
+    </section>
+</body>
+</html>

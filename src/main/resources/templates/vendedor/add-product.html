@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Add New Product</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <h1>Add New Product</h1>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <p th:text="${errorMessage}"></p>
+        </div>
+        <div th:if="${successMessage}" class="alert alert-success">
+            <p th:text="${successMessage}"></p>
+        </div>
+
+        <form th:action="@{/vendedor/produtos/add}" th:object="${produtoDto}" method="post">
+            <div>
+                <label for="nome">Product Name:</label>
+                <input type="text" id="nome" th:field="*{nome}" required />
+                <!-- TODO: Add validation error display here later if needed -->
+            </div>
+            <div>
+                <label for="preco">Price:</label>
+                <input type="number" step="0.01" id="preco" th:field="*{preco}" required />
+                <!-- TODO: Add validation error display here later if needed -->
+            </div>
+            <div>
+                <label for="descricao">Description:</label>
+                <textarea id="descricao" th:field="*{descricao}" rows="4" required></textarea>
+                <!-- TODO: Add validation error display here later if needed -->
+            </div>
+            <div>
+                <button type="submit">Add Product</button>
+            </div>
+        </form>
+    </section>
+</body>
+</html>

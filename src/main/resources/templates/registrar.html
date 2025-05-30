@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <h1>User Registration</h1>
+
+        <!-- Success Message Placeholder -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <p th:text="${successMessage}"></p>
+        </div>
+
+        <!-- Error Message Placeholder -->
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <form action="#" th:action="@{/registrar}" th:object="${usuarioDto}" method="post">
+            <div>
+                <label for="nome">Name:</label>
+                <input type="text" id="nome" th:field="*{nome}"/>
+            </div>
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" th:field="*{email}"/>
+            </div>
+            <div>
+                <label for="senha">Password:</label>
+                <input type="password" id="senha" th:field="*{senha}"/>
+            </div>
+            <div>
+                <label for="cpfCnpj">CPF/CNPJ:</label>
+                <input type="text" id="cpfCnpj" th:field="*{cpfCnpj}"/>
+            </div>
+            <div>
+                <button type="submit">Register</button>
+            </div>
+        </form>
+        <!-- The "Back to Home" link is already in the layout's header, so it can be removed if not specifically needed here. -->
+        <!-- For now, keeping it as per original content before layout modification -->
+         <p><a th:href="@{/}">Back to Home</a></p>
+    </section>
+</body>
+</html>

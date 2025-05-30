@@ -1,0 +1,13 @@
+package com.trabalho.cliqaqui.repositories;
+
+import com.trabalho.cliqaqui.model.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
+    Optional<Usuario> findByEmail(String email); // Add this method
+    // Custom query methods can be added here later if needed
+}
