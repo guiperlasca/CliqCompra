@@ -87,7 +87,7 @@ public class WebController {
     }
 
     @PostMapping("/registrar")
-    public String processRegistration(@ModelAttribute("usuarioDto") UsuarioDTO usuarioDto, Model model, HttpSession session /*, RedirectAttributes redirectAttributes */) {
+    public String processRegistration(@ModelAttribute("usuarioDto") UsuarioDTO usuarioDto, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         // TODO: Add validation for usuarioDto (e.g., using @Valid and BindingResult)
 
         Usuario novoUsuario;
@@ -121,8 +121,21 @@ public class WebController {
 
         try {
             usuarioService.salvarUsuario(novoUsuario);
-            // redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please login.");
-            return "redirect:/login"; // Redirect to login page on success
+
+            // Automatic login after successful registration
+            session.setAttribute("loggedInUserId", novoUsuario.getId());
+            session.setAttribute("loggedInUserEmail", novoUsuario.getEmail());
+
+            String registeredUserType = "USUARIO"; // Default, should be overridden
+            if (novoUsuario instanceof Cliente) {
+                registeredUserType = "CLIENTE";
+            } else if (novoUsuario instanceof Vendedor) {
+                registeredUserType = "VENDEDOR";
+            }
+            session.setAttribute("loggedInUserType", registeredUserType);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Welcome, " + novoUsuario.getNome());
+            return "redirect:/home"; // Redirect to home page
         } catch (Exception e) {
             // TODO: More specific error handling (e.g., for duplicate email, or other DB constraints)
             // For now, re-render the form with a generic error message
