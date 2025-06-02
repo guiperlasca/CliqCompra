@@ -9,6 +9,13 @@
     <section layout:fragment="content">
         <h1>Welcome to CliqCompra!</h1>
         <p>This is the main content area of the home page. Explore our site using the navigation above.</p>
+
+        <!-- Add Product Link for Logged-in Users -->
+        <div th:if="${isUserLoggedIn}" style="margin-top: 20px; margin-bottom: 20px;">
+            <p>Want to sell your own items?</p>
+            <a th:href="@{/produtos/add}" class="btn btn-primary">Add New Product</a>
+        </div>
+
         <!-- Specific calls to action or featured content for the home page can go here -->
         <!-- For example, if these links are specific to the home page content: -->
         <p>Ready to get started?</p>

@@ -16,7 +16,7 @@
             <p th:text="${errorMessage}"></p>
         </div>
 
-        <p><a th:href="@{/vendedor/produtos/add}" class="btn btn-primary">Add New Product</a></p> <br/>
+        <p><a th:href="@{/produtos/add}" class="btn btn-primary">Add New Product</a></p> <br/>
 
 
         <div th:if="${#lists.isEmpty(produtos)}">
@@ -29,6 +29,7 @@
                     <th>Name</th>
                     <th>Price</th>
                     <th>Description</th>
+                    <th>Photo</th>
                     <!-- TODO: Add column for Actions (Edit/Delete) later -->
                 </tr>
             </thead>
@@ -37,6 +38,10 @@
                     <td th:text="${produto.nome}">Product Name</td>
                     <td th:text="${#numbers.formatCurrency(produto.preco)}">0.00</td>
                     <td th:text="${produto.descricao}">Product Description</td>
+                    <td>
+                        <img th:if="${produto.fotoUrl != null and not #strings.isEmpty(produto.fotoUrl)}" th:src="@{${produto.fotoUrl}}" alt="Product Image" style="width:100px; height:auto;" />
+                        <span th:if="${produto.fotoUrl == null or #strings.isEmpty(produto.fotoUrl)}">No Image</span>
+                    </td>
                     <!-- TODO: Add actions links/buttons here later -->
                 </tr>
             </tbody>

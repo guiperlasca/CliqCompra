@@ -1,5 +1,13 @@
 package com.trabalho.cliqaqui.controller;
 
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+
 import com.trabalho.cliqaqui.dto.UsuarioDTO;
 import com.trabalho.cliqaqui.model.Produto;
 import com.trabalho.cliqaqui.model.Usuario;
@@ -38,6 +46,9 @@ import java.util.Optional; // Added import
 
 @Controller
 public class WebController {
+
+    public static final String UPLOAD_DIR_STATIC_RESOURCES = "src/main/resources/static/product-photos";
+    public static final String UPLOAD_DIR_WEB_PATH = "/product-photos/";
 
     private final ProdutoService produtoService;
     private final UsuarioService usuarioService;
@@ -235,7 +246,8 @@ public class WebController {
     }
 
     @PostMapping("/produtos/add") // Renamed mapping
-    public String processAddProduct(@ModelAttribute("produtoDto") ProdutoDTO produtoDto, /* TODO: Add @Valid and BindingResult for validation */
+    public String processAddProduct(@ModelAttribute("produtoDto") ProdutoDTO produtoDto,
+                                    @RequestParam(name = "fotoFile", required = false) MultipartFile fotoFile,
                                     HttpSession session,
                                     RedirectAttributes redirectAttributes,
                                     Model model) { // Added Model for re-rendering form on error
@@ -276,10 +288,42 @@ public class WebController {
         produto.setDescricao(produtoDto.getDescricao());
         produto.setUsuario(usuario); // Associate with the logged-in Usuario
 
+        if (fotoFile != null && !fotoFile.isEmpty()) {
+            try {
+                // Ensure the upload directory exists
+                Path uploadPath = Paths.get(UPLOAD_DIR_STATIC_RESOURCES);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+
+                String originalFileName = fotoFile.getOriginalFilename();
+                String fileExtension = "";
+                if (originalFileName != null && originalFileName.contains(".")) {
+                    fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+                }
+                String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
+                
+                Path filePath = uploadPath.resolve(uniqueFileName);
+                Files.copy(fotoFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                
+                produto.setFotoUrl(UPLOAD_DIR_WEB_PATH + uniqueFileName); // Store web-accessible path
+
+            } catch (IOException e) {
+                // Log the error: e.g., e.printStackTrace();
+                // Optionally, add a specific error message to redirectAttributes or model for photo upload failure
+                model.addAttribute("errorMessage", "Photo upload failed, product saved without photo. Error: " + e.getMessage());
+                // If you want to stop product creation on photo error, uncomment below and comment out the model.addAttribute above
+                // redirectAttributes.addFlashAttribute("errorMessage", "Photo upload failed: " + e.getMessage());
+                // return "redirect:/produtos/add"; 
+            }
+        } else {
+            produto.setFotoUrl(null); // Or some default photo path
+        }
+
         try {
             produtoService.salvarProduto(produto);
             redirectAttributes.addFlashAttribute("successMessage", "Product added successfully!");
-            return "redirect:/produtos/my"; // Redirect to "My Products" page (template path remains for now)
+            return "redirect:/produtos/my";
         } catch (Exception e) {
             // Log the exception e.g. e.printStackTrace();
             model.addAttribute("errorMessage", "Error adding product. Please try again.");

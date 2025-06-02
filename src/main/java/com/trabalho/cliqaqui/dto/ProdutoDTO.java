@@ -1,9 +1,12 @@
 package com.trabalho.cliqaqui.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class ProdutoDTO {
     private String nome;
     private double preco;
     private String descricao;
+    private MultipartFile fotoFile;
     // Categories can be added later if needed.
 
     public ProdutoDTO() {
@@ -32,5 +35,13 @@ public class ProdutoDTO {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public MultipartFile getFotoFile() {
+        return fotoFile;
+    }
+
+    public void setFotoFile(MultipartFile fotoFile) {
+        this.fotoFile = fotoFile;
     }
 }
