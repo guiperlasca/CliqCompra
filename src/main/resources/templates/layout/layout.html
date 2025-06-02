@@ -28,7 +28,7 @@
                     <th:block th:if="${isUserLoggedIn}">
                         <li>
                             <span style="color: #fff; margin-right: 15px;">
-                                Welcome, <span th:text="${loggedInUserEmail}"></span> (<span th:text="${loggedInUserType}"></span>)
+                                Welcome, <span th:text="${session.loggedInUserName != null ? session.loggedInUserName : loggedInUserEmail}"></span> (<span th:text="${loggedInUserType}"></span>)
                             </span>
                         </li>
 
