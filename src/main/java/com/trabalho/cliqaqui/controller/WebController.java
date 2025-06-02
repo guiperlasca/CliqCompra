@@ -211,37 +211,40 @@ public class WebController {
         return "redirect:/login";
     }
 
-    @GetMapping("/vendedor/produtos/add")
+    @GetMapping("/produtos/add") // Renamed mapping
     public String showAddProductForm(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        String userType = (String) session.getAttribute("loggedInUserType");
+        // String userType = (String) session.getAttribute("loggedInUserType"); // No longer needed for this primary check
         String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
 
-        model.addAttribute("isUserLoggedIn", loggedInUserEmail != null);
-        if (loggedInUserEmail != null) {
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to add products.");
+            return "redirect:/login";
+        }
+
+        model.addAttribute("isUserLoggedIn", loggedInUserEmail != null); // True if loggedInUserId is not null
+        if (loggedInUserEmail != null) { // Should always be true if loggedInUserId is not null
             model.addAttribute("loggedInUserEmail", loggedInUserEmail);
             model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
-            model.addAttribute("loggedInUserType", userType); // Pass userType for Vendedor links in layout
+            model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
         }
+        // Removed VENDEDOR specific check
 
-        if (!"VENDEDOR".equals(userType)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be a Vendedor to add products.");
-            return "redirect:/login"; // Or redirect:/home
-        }
         model.addAttribute("produtoDto", new ProdutoDTO());
-        return "vendedor/add-product";
+        return "produto/add-product";
     }
 
-    @PostMapping("/vendedor/produtos/add")
+    @PostMapping("/produtos/add") // Renamed mapping
     public String processAddProduct(@ModelAttribute("produtoDto") ProdutoDTO produtoDto, /* TODO: Add @Valid and BindingResult for validation */
                                     HttpSession session,
                                     RedirectAttributes redirectAttributes,
                                     Model model) { // Added Model for re-rendering form on error
 
-        String userType = (String) session.getAttribute("loggedInUserType");
+        // String userType = (String) session.getAttribute("loggedInUserType"); // No longer needed for this primary check
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
 
-        if (!"VENDEDOR".equals(userType) || loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in as a Vendedor to add products.");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to add products.");
             return "redirect:/login";
         }
 
@@ -257,67 +260,69 @@ public class WebController {
         // }
         // return "vendedor/add-product"; // Return to form if validation fails
 
-        // Fetch the Vendedor entity
-        Optional<Usuario> optionalVendedor = usuarioRepository.findById(loggedInUserId);
-        if (!optionalVendedor.isPresent() || !(optionalVendedor.get() instanceof Vendedor)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Could not find Vendedor account.");
-            return "redirect:/vendedor/produtos/add"; // Or some other error handling
+        // Fetch the Usuario entity
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
+        if (!optionalUsuario.isPresent()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Could not find your account details.");
+            // Consider redirecting to a more appropriate page if needed, e.g., "/produtos/add" or "/home"
+            return "redirect:/produtos/add";
         }
-        Vendedor vendedor = (Vendedor) optionalVendedor.get();
+        Usuario usuario = optionalUsuario.get();
 
         // Convert DTO to Produto entity
         Produto produto = new Produto();
         produto.setNome(produtoDto.getNome());
         produto.setPreco(produtoDto.getPreco());
         produto.setDescricao(produtoDto.getDescricao());
-        produto.setVendedor(vendedor); // Associate with the logged-in Vendedor
+        produto.setUsuario(usuario); // Associate with the logged-in Usuario
 
         try {
             produtoService.salvarProduto(produto);
             redirectAttributes.addFlashAttribute("successMessage", "Product added successfully!");
-            return "redirect:/vendedor/produtos/my"; // Redirect to "My Products" page (to be created)
+            return "redirect:/produtos/my"; // Redirect to "My Products" page (template path remains for now)
         } catch (Exception e) {
             // Log the exception e.g. e.printStackTrace();
             model.addAttribute("errorMessage", "Error adding product. Please try again.");
             model.addAttribute("produtoDto", produtoDto); // Send DTO back
             // Re-populate login status for layout
             String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+            String userTypeFromSession = (String) session.getAttribute("loggedInUserType"); // Get userType for model
             model.addAttribute("isUserLoggedIn", loggedInUserEmail != null);
             if (loggedInUserEmail != null) {
                 model.addAttribute("loggedInUserEmail", loggedInUserEmail);
                 model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
-                model.addAttribute("loggedInUserType", userType);
+                model.addAttribute("loggedInUserType", userTypeFromSession); // Use userType from session
             }
-            return "vendedor/add-product"; // Return to form
+            return "produto/add-product";
         }
     }
 
-    @GetMapping("/vendedor/produtos/my")
+    @GetMapping("/produtos/my") // Renamed mapping
     public String showMyProducts(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        String userType = (String) session.getAttribute("loggedInUserType");
+        // String userType = (String) session.getAttribute("loggedInUserType"); // No longer needed for this primary check
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
 
-        if (!"VENDEDOR".equals(userType) || loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in as a Vendedor to view your products.");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to view your products.");
             return "redirect:/login";
         }
 
-        List<Produto> myProducts = produtoService.listarProdutosPorVendedor(loggedInUserId);
-        model.addAttribute("produtos", myProducts); // Use "produtos" to reuse product listing template logic if possible
+        List<Produto> myProducts = produtoService.listarProdutosPorUsuario(loggedInUserId); // Changed service method
+        model.addAttribute("produtos", myProducts);
 
         // Pass login status and type for layout
         String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
-        model.addAttribute("isUserLoggedIn", true); // Must be logged in to reach here as Vendedor
+        model.addAttribute("isUserLoggedIn", true); // Must be logged in to reach here
         model.addAttribute("loggedInUserEmail", loggedInUserEmail);
         model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
-        model.addAttribute("loggedInUserType", userType);
+        model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType")); // Get type from session
         
         // Add any specific messages e.g. from adding a product
         if (model.containsAttribute("successMessage")) { // Check if flash attribute was added
             model.addAttribute("successMessage", model.getAttribute("successMessage"));
         }
 
-        return "vendedor/my-products";
+        return "produto/my-products";
     }
     // } Closing brace removed here
 

@@ -32,18 +32,16 @@
                             </span>
                         </li>
 
-                        <!-- Vendedor Specific Links -->
-                        <th:block th:if="${loggedInUserType == 'VENDEDOR'}">
-                            <li><a th:href="@{/vendedor/produtos/add}">Add Product</a></li>
-                            <li><a th:href="@{/vendedor/produtos/my}">My Products</a></li>
-                        </th:block>
+                        <!-- Links for all logged-in users -->
+                        <li><a th:href="@{/produtos/add}">Add Product</a></li>
+                        <li><a th:href="@{/produtos/my}">My Products</a></li>
 
-                        <!-- Cliente Specific Links -->
+                        <!-- Cliente Specific Links (if they remain distinct) -->
                         <th:block th:if="${loggedInUserType == 'CLIENTE'}">
                             <li><a th:href="@{/cart}">My Cart</a></li>
                             <li><a th:href="@{/cliente/pedidos}">My Orders</a></li>
                         </th:block>
-
+                        
                         <li>
                             <a th:href="@{/logout}">Logout</a>
                         </li>

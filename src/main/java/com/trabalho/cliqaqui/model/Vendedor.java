@@ -9,9 +9,6 @@ import java.util.List;
 @Entity
 public class Vendedor extends Usuario {
 
-    @OneToMany(mappedBy = "vendedor", cascade = CascadeType.ALL)
-    private List<Produto> produtos = new ArrayList<>();
-
     // A Vendedor might not directly "own" Pedidos in the same way a Cliente does.
     // The visualizarPedidos() method might involve querying Pedidos based on the Vendedor's produtos.
     // For now, no direct JPA relationship for Pedidos from Vendedor based on the provided UML interpretation.
@@ -20,22 +17,8 @@ public class Vendedor extends Usuario {
         super();
     }
 
-    public List<Produto> getProdutos() {
-        return produtos;
-    }
-
-    public void setProdutos(List<Produto> produtos) {
-        this.produtos = produtos;
-    }
-
     public void cadastrar() {
         // Placeholder
-    }
-
-    public void cadastrarProduto(Produto produto) {
-        // Placeholder: Actual logic would involve adding to this.produtos and persisting.
-        // this.produtos.add(produto);
-        // produto.setVendedor(this); // If bidirectional
     }
 
     public void aplicarDescontoItem(ItemPedido item, double valorDesconto) {

@@ -3,6 +3,9 @@ package com.trabalho.cliqaqui.model;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+// import com.trabalho.cliqaqui.model.Produto; // Already in same package
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -21,6 +24,9 @@ public abstract class Usuario {
     @CollectionTable(name = "usuario_telefones", joinColumns = @JoinColumn(name = "usuario_id"))
     @Column(name = "telefone")
     private List<String> telefones = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Produto> produtos = new ArrayList<>();
 
     public Usuario() {
     }
@@ -80,5 +86,13 @@ public abstract class Usuario {
 
     public void editarPerfil() {
         // Placeholder
+    }
+
+    public List<Produto> getProdutos() {
+        return produtos;
+    }
+
+    public void setProdutos(List<Produto> produtos) {
+        this.produtos = produtos;
     }
 }

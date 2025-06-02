@@ -13,6 +13,7 @@ public class Produto {
     private String nome;
     private double preco;
     private String descricao;
+    private String fotoUrl;
 
     @ManyToMany
     @JoinTable(
@@ -23,8 +24,8 @@ public class Produto {
     private List<Categoria> categorias = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "vendedor_id")
-    private Vendedor vendedor;
+    @JoinColumn(name = "usuario_id") // Changed column name
+    private Usuario usuario; // Changed type
 
     public Produto() {
     }
@@ -61,6 +62,14 @@ public class Produto {
         this.descricao = descricao;
     }
 
+    public String getFotoUrl() {
+        return fotoUrl;
+    }
+
+    public void setFotoUrl(String fotoUrl) {
+        this.fotoUrl = fotoUrl;
+    }
+
     public List<Categoria> getCategorias() {
         return categorias;
     }
@@ -69,12 +78,12 @@ public class Produto {
         this.categorias = categorias;
     }
 
-    public Vendedor getVendedor() {
-        return vendedor;
+    public Usuario getUsuario() { // Renamed method, changed return type
+        return usuario;
     }
 
-    public void setVendedor(Vendedor vendedor) {
-        this.vendedor = vendedor;
+    public void setUsuario(Usuario usuario) { // Renamed method, changed parameter type
+        this.usuario = usuario;
     }
 
     public void adicionarCategoria(Categoria categoria) {
