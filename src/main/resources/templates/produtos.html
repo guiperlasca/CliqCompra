@@ -3,23 +3,23 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 <head>
-    <title>Products</title>
+    <title>Produtos</title>
 </head>
 <body>
     <section layout:fragment="content">
-        <h1>Our Products</h1>
+        <h1>Nossos Produtos</h1>
 
         <div th:if="${#lists.isEmpty(produtos)}">
-            <p>No products available at the moment.</p>
+            <p>Nenhum produto disponível no momento.</p>
         </div>
 
         <table th:unless="${#lists.isEmpty(produtos)}">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Description</th>
-                    <th>Action</th> <!-- New Header -->
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Descrição</th>
+                    <th>Ação</th> <!-- New Header -->
                 </tr>
             </thead>
             <tbody>
@@ -30,7 +30,7 @@
                     <td>
                         <form th:action="@{/cart/add/{id}(id=${produto.id})}" method="post" style="display: inline;">
                             <input type="number" name="quantity" value="1" min="1" style="width: 50px; margin-right: 5px;" />
-                            <button type="submit">Add to Cart</button>
+                            <button type="submit">Adicionar ao Carrinho</button>
                             <!-- The example used btn-sm btn-success, but style.css only has button[type="submit"] -->
                             <!-- The default button styling will be applied. -->
                         </form>

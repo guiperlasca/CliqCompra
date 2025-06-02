@@ -3,11 +3,11 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 <head>
-    <title>Register</title>
+    <title>Registrar</title>
 </head>
 <body>
     <section layout:fragment="content">
-        <h1>User Registration</h1>
+        <h1>Cadastro de Usuário</h1>
 
         <!-- Success Message Placeholder -->
         <div th:if="${successMessage}" class="alert alert-success">
@@ -21,7 +21,7 @@
 
         <form action="#" th:action="@{/registrar}" th:object="${usuarioDto}" method="post">
             <div>
-                <label for="nome">Name:</label>
+                <label for="nome">Nome:</label>
                 <input type="text" id="nome" th:field="*{nome}"/>
             </div>
             <div>
@@ -29,7 +29,7 @@
                 <input type="email" id="email" th:field="*{email}"/>
             </div>
             <div>
-                <label for="senha">Password:</label>
+                <label for="senha">Senha:</label>
                 <input type="password" id="senha" th:field="*{senha}"/>
             </div>
             <div>
@@ -37,12 +37,12 @@
                 <input type="text" id="cpfCnpj" th:field="*{cpfCnpj}"/>
             </div>
             <div>
-                <button type="submit">Register</button>
+                <button type="submit">Registrar</button>
             </div>
         </form>
         <!-- The "Back to Home" link is already in the layout's header, so it can be removed if not specifically needed here. -->
         <!-- For now, keeping it as per original content before layout modification -->
-         <p><a th:href="@{/}">Back to Home</a></p>
+         <p><a th:href="@{/}">Voltar para Início</a></p>
     </section>
 </body>
 </html>

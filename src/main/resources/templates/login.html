@@ -3,11 +3,11 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 <head>
-    <title>Login</title>
+    <title>Entrar</title>
 </head>
 <body>
     <section layout:fragment="content">
-        <h1>Login</h1>
+        <h1>Entrar</h1>
 
         <!-- Login Success Message -->
         <div th:if="${successMessage}" class="alert alert-success">
@@ -30,14 +30,14 @@
                 <input type="email" id="email" name="email" required autofocus />
             </div>
             <div>
-                <label for="password">Password:</label>
+                <label for="password">Senha:</label>
                 <input type="password" id="password" name="senha" required />
             </div>
             <div>
-                <button type="submit">Login</button>
+                <button type="submit">Entrar</button>
             </div>
         </form>
-        <p>New user? <a th:href="@{/registrar}">Register here</a>.</p>
+        <p>Novo usuário? <a th:href="@{/registrar}">Registre-se aqui</a>.</p>
     </section>
 </body>
 </html>
