@@ -35,7 +35,7 @@ public class ProdutoService {
         produtoRepository.deleteById(id);
     }
 
-    public List<Produto> listarProdutosPorVendedor(Integer vendedorId) {
-        return produtoRepository.findByVendedorId(vendedorId);
+    public List<Produto> listarProdutosPorUsuario(Integer usuarioId) {
+        return produtoRepository.findByUsuarioId(usuarioId);
     }
 }

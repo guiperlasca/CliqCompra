@@ -16,7 +16,7 @@
             <p th:text="${successMessage}"></p>
         </div>
 
-        <form th:action="@{/vendedor/produtos/add}" th:object="${produtoDto}" method="post">
+        <form th:action="@{/produtos/add}" th:object="${produtoDto}" method="post" enctype="multipart/form-data">
             <div>
                 <label for="nome">Product Name:</label>
                 <input type="text" id="nome" th:field="*{nome}" required />
@@ -30,6 +30,11 @@
             <div>
                 <label for="descricao">Description:</label>
                 <textarea id="descricao" th:field="*{descricao}" rows="4" required></textarea>
+                <!-- TODO: Add validation error display here later if needed -->
+            </div>
+            <div>
+                <label for="fotoFile">Product Photo:</label>
+                <input type="file" id="fotoFile" name="fotoFile" />
                 <!-- TODO: Add validation error display here later if needed -->
             </div>
             <div>

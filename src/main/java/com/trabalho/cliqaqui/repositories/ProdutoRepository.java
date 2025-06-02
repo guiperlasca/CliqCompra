@@ -8,6 +8,6 @@ import java.util.List; // Ensure this import is present
 
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
-    List<Produto> findByVendedorId(Integer vendedorId);
+    List<Produto> findByUsuarioId(Integer usuarioId);
     // Custom query methods can be added here later if needed
 }
