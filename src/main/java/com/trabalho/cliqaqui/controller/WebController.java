@@ -370,6 +370,119 @@ public class WebController {
     }
     // } Closing brace removed here
 
+    @GetMapping("/cliente/enderecos/add")
+    public String showAddAddressForm(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to add an address.");
+            return "redirect:/login";
+        }
+        // Optional: Check if user is Cliente if other user types exist and should not add addresses
+        // String userType = (String) session.getAttribute("loggedInUserType");
+        // if (!"CLIENTE".equals(userType)) {
+        //     redirectAttributes.addFlashAttribute("errorMessage", "Only Clientes can add addresses.");
+        //     return "redirect:/home"; // Or appropriate page
+        // }
+
+        model.addAttribute("endereco", new Endereco());
+        // Add common model attributes for layout
+        String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+        model.addAttribute("isUserLoggedIn", true);
+        model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+        model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+        model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
+        return "cliente/add-address";
+    }
+
+    @PostMapping("/cliente/enderecos/add")
+    public String processAddAddress(@ModelAttribute("endereco") Endereco endereco, // Consider adding @Valid later
+                                    // BindingResult bindingResult, // For @Valid
+                                    HttpSession session,
+                                    RedirectAttributes redirectAttributes,
+                                    Model model) { // Added Model for re-rendering form on error
+
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Session expired or not logged in. Please login again.");
+            return "redirect:/login";
+        }
+
+        // Optional: Server-side validation here if @Valid is not used yet
+        // if (bindingResult.hasErrors()) {
+        //     // Re-populate common model attributes for layout if returning to form
+        //     String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+        //     model.addAttribute("isUserLoggedIn", true);
+        //     model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+        //     model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+        //     model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
+        //     model.addAttribute("endereco", endereco); // Send DTO back with submitted values
+        //     return "cliente/add-address";
+        // }
+
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
+        if (!optionalUsuario.isPresent() || !(optionalUsuario.get() instanceof Cliente)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Could not find your client account details.");
+            return "redirect:/home"; // Or a more appropriate error page
+        }
+        Cliente cliente = (Cliente) optionalUsuario.get();
+
+        // Add the new address to the client's list of addresses
+        // The CascadeType.ALL on Cliente.enderecos should handle persisting the new Endereco
+        if (cliente.getEnderecos() == null) {
+            cliente.setEnderecos(new ArrayList<>());
+        }
+        endereco.setCliente(cliente); // Set the owning side of the relationship
+        cliente.getEnderecos().add(endereco); 
+        
+        try {
+            usuarioService.salvarUsuario(cliente); // Assuming UsuarioService.salvarUsuario() handles cascading saves for Cliente
+            redirectAttributes.addFlashAttribute("successMessage", "Address added successfully!");
+            return "redirect:/cliente/enderecos"; // Redirect to a page listing addresses
+        } catch (Exception e) {
+            // Log e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "Error saving address: " + e.getMessage());
+            // Optionally, return to form with error and populated fields
+            // For now, redirecting to avoid resubmission issues, but state is lost.
+            // To return to form:
+            // String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+            // model.addAttribute("isUserLoggedIn", true);
+            // model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+            // model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+            // model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
+            // model.addAttribute("endereco", endereco); // Send DTO back
+            // model.addAttribute("errorMessage", "Error saving address: " + e.getMessage()); // Re-add error for display on form
+            // return "cliente/add-address";
+            return "redirect:/cliente/enderecos/add"; // Simpler redirect for now
+        }
+    }
+
+    @GetMapping("/cliente/enderecos")
+    public String showMyAddressesPage(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to view your addresses.");
+            return "redirect:/login";
+        }
+
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
+        if (!optionalUsuario.isPresent() || !(optionalUsuario.get() instanceof Cliente)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Could not find your client account details.");
+            return "redirect:/home"; // Or a more appropriate error page
+        }
+        Cliente cliente = (Cliente) optionalUsuario.get();
+
+        model.addAttribute("enderecos", cliente.getEnderecos());
+        
+        // Add common model attributes for layout
+        String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+        model.addAttribute("isUserLoggedIn", true);
+        model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+        model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+        model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
+        
+        return "cliente/my-addresses";
+    }
+
     @PostMapping("/cart/add/{productId}")
     public String addToCart(@PathVariable("productId") Integer productId,
                             @RequestParam(value = "quantity", defaultValue = "1") int quantity,
@@ -446,14 +559,93 @@ public class WebController {
         return "redirect:/cart";
     }
 
-    @GetMapping("/checkout/confirm")
-    public String showConfirmOrderPage(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        String userType = (String) session.getAttribute("loggedInUserType");
+    @GetMapping("/checkout/address-select")
+    public String showAddressSelectionPage(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        String userType = (String) session.getAttribute("loggedInUserType");
 
-        if (!"CLIENTE".equals(userType) || loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in as a Cliente to checkout.");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to proceed to checkout.");
             return "redirect:/login";
+        }
+        if (!"CLIENTE".equals(userType)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Only Clientes can proceed to checkout.");
+            // Or redirect to home if they are some other logged-in type
+            return "redirect:/cart"; 
+        }
+
+        // Check if cart is empty
+        ShoppingCartDTO cart = shoppingCartService.getCart(); // Assuming shoppingCartService is injected
+        if (cart == null || cart.getItems().isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Your cart is empty. Please add items to your cart first.");
+            return "redirect:/cart";
+        }
+
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
+        if (!optionalUsuario.isPresent() || !(optionalUsuario.get() instanceof Cliente)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Could not find your client account details.");
+            return "redirect:/home";
+        }
+        Cliente cliente = (Cliente) optionalUsuario.get();
+        model.addAttribute("enderecos", cliente.getEnderecos());
+
+        // Add common model attributes for layout
+        String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+        model.addAttribute("isUserLoggedIn", true);
+        model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+        model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+        model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
+        return "checkout/address-select";
+    }
+
+    @PostMapping("/checkout/address-select")
+    public String processAddressSelection(@RequestParam("selectedEnderecoId") Integer selectedEnderecoId,
+                                            HttpSession session,
+                                            RedirectAttributes redirectAttributes) {
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Session expired. Please login again.");
+            return "redirect:/login";
+        }
+
+        // Optional: Validate that selectedEnderecoId belongs to the loggedInUserId
+        // This is important for security. For now, we'll trust the ID.
+        // Example validation:
+        // Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
+        // if (optionalUsuario.isPresent() && optionalUsuario.get() instanceof Cliente) {
+        //     Cliente cliente = (Cliente) optionalUsuario.get();
+        //     boolean addressIsValid = cliente.getEnderecos().stream().anyMatch(e -> e.getId().equals(selectedEnderecoId));
+        //     if (!addressIsValid) {
+        //         redirectAttributes.addFlashAttribute("errorMessage", "Invalid address selected.");
+        //         return "redirect:/checkout/address-select";
+        //     }
+        // } else {
+        //      redirectAttributes.addFlashAttribute("errorMessage", "User not found or not a client.");
+        //      return "redirect:/login";
+        // }
+
+
+        if (selectedEnderecoId == null) {
+             redirectAttributes.addFlashAttribute("errorMessage", "Please select a shipping address.");
+             return "redirect:/checkout/address-select";
+        }
+        
+        session.setAttribute("selectedEnderecoId", selectedEnderecoId);
+        return "redirect:/checkout/confirm-order-details"; // Next step in checkout
+    }
+
+    @GetMapping("/checkout/confirm-order-details") // Renamed mapping
+    public String showConfirmOrderDetailsPage(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        String userType = (String) session.getAttribute("loggedInUserType");
+
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to confirm your order.");
+            return "redirect:/login";
+        }
+        if (!"CLIENTE".equals(userType)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Only Clientes can confirm orders.");
+            return "redirect:/cart"; 
         }
 
         ShoppingCartDTO cart = shoppingCartService.getCart();
@@ -462,36 +654,49 @@ public class WebController {
             return "redirect:/cart";
         }
 
+        Integer selectedEnderecoId = (Integer) session.getAttribute("selectedEnderecoId");
+        if (selectedEnderecoId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "No shipping address selected. Please select an address.");
+            return "redirect:/checkout/address-select";
+        }
+
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
         if (!optionalUsuario.isPresent() || !(optionalUsuario.get() instanceof Cliente)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Could not find Cliente account details.");
-            // This case should ideally not happen if session integrity is maintained
-            return "redirect:/login";
+            redirectAttributes.addFlashAttribute("errorMessage", "Could not find your client account details.");
+            return "redirect:/login"; 
         }
         Cliente cliente = (Cliente) optionalUsuario.get();
-        List<Endereco> enderecos = cliente.getEnderecos(); // Assumes getEnderecos() is available and populated
+        
+        Optional<Endereco> selectedEnderecoOpt = cliente.getEnderecos().stream()
+                .filter(e -> e.getId().equals(selectedEnderecoId))
+                .findFirst();
 
+        if (!selectedEnderecoOpt.isPresent()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Selected address not found. Please select again.");
+            session.removeAttribute("selectedEnderecoId"); // Clear invalid ID
+            return "redirect:/checkout/address-select";
+        }
+        
         model.addAttribute("shoppingCart", cart);
-        model.addAttribute("enderecos", enderecos);
+        model.addAttribute("selectedEndereco", selectedEnderecoOpt.get());
 
-        // Add login status for layout
+        // Add common model attributes for layout
+        String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
         model.addAttribute("isUserLoggedIn", true);
-        model.addAttribute("loggedInUserEmail", (String) session.getAttribute("loggedInUserEmail"));
+        model.addAttribute("loggedInUserEmail", loggedInUserEmail);
         model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
-        model.addAttribute("loggedInUserType", userType);
+        model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
 
-        return "checkout/confirm-order";
+        return "checkout/confirm-order-details";
     }
 
     @PostMapping("/checkout/place-order")
-    public String placeOrder(@RequestParam("enderecoId") Integer enderecoId,
-                             HttpSession session,
-                             RedirectAttributes redirectAttributes) {
+    public String placeOrder(HttpSession session, RedirectAttributes redirectAttributes) {
 
-        String userType = (String) session.getAttribute("loggedInUserType");
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        String userType = (String) session.getAttribute("loggedInUserType");
 
-        if (!"CLIENTE".equals(userType) || loggedInUserId == null) {
+        if (loggedInUserId == null || !"CLIENTE".equals(userType)) {
             redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in as a Cliente to place an order.");
             return "redirect:/login";
         }
@@ -502,25 +707,26 @@ public class WebController {
             return "redirect:/cart";
         }
 
-        if (enderecoId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Please select a shipping address.");
-            return "redirect:/checkout/confirm";
+        Integer selectedEnderecoId = (Integer) session.getAttribute("selectedEnderecoId");
+        if (selectedEnderecoId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Address not selected or session expired. Please select an address.");
+            return "redirect:/checkout/address-select";
         }
 
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
         if (!optionalUsuario.isPresent() || !(optionalUsuario.get() instanceof Cliente)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Could not find Cliente account details.");
-            return "redirect:/login";
+            return "redirect:/login"; // Should not happen if session is consistent
         }
         Cliente cliente = (Cliente) optionalUsuario.get();
 
         Optional<Endereco> selectedEnderecoOpt = cliente.getEnderecos().stream()
-            .filter(e -> e.getId().equals(enderecoId))
+            .filter(e -> e.getId().equals(selectedEnderecoId))
             .findFirst();
 
         if (!selectedEnderecoOpt.isPresent()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Invalid shipping address selected.");
-            return "redirect:/checkout/confirm";
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid shipping address selected. Please select again.");
+            return "redirect:/checkout/address-select";
         }
         Endereco enderecoEntrega = selectedEnderecoOpt.get();
 
@@ -554,15 +760,16 @@ public class WebController {
             // Using existing criarPedido method which calls pedidoRepository.save()
             Pedido pedidoSalvo = pedidoService.criarPedido(novoPedido); 
             shoppingCartService.clearCart();
+            session.removeAttribute("selectedEnderecoId"); // Clear selected address from session
             redirectAttributes.addFlashAttribute("successMessage", "Order placed successfully! Your Order ID is: " + pedidoSalvo.getId());
             // TODO: Create this confirmation page in a later step
             return "redirect:/checkout/order/" + pedidoSalvo.getId() + "/confirmation"; 
         } catch (Exception e) {
             // Log e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", "Error placing order. Please try again. " + e.getMessage());
-            return "redirect:/checkout/confirm";
+            return "redirect:/cart"; // Or /checkout/address-select
         }
-    } // Closing brace removed here
+    }
 
     @GetMapping("/checkout/order/{orderId}/confirmation")
     public String showOrderConfirmationPage(@PathVariable("orderId") Integer orderId,

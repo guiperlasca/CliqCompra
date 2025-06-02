@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Add New Address</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <h1>Add New Address</h1>
+
+        <form th:action="@{/cliente/enderecos/add}" th:object="${endereco}" method="post">
+            <div>
+                <label for="rua">Street (Rua):</label>
+                <input type="text" id="rua" th:field="*{rua}" class="form-control" required />
+                <div th:if="${#fields.hasErrors('rua')}" th:errors="*{rua}" class="text-danger">Error</div>
+            </div>
+            <div>
+                <label for="numero">Number (Número):</label>
+                <input type="text" id="numero" th:field="*{numero}" class="form-control" required />
+                <div th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}" class="text-danger">Error</div>
+            </div>
+            <div>
+                <label for="complemento">Complement (Complemento):</label>
+                <input type="text" id="complemento" th:field="*{complemento}" class="form-control" />
+            </div>
+            <div>
+                <label for="bairro">Neighborhood (Bairro):</label>
+                <input type="text" id="bairro" th:field="*{bairro}" class="form-control" required />
+                <div th:if="${#fields.hasErrors('bairro')}" th:errors="*{bairro}" class="text-danger">Error</div>
+            </div>
+            <div>
+                <label for="cidade">City (Cidade):</label>
+                <input type="text" id="cidade" th:field="*{cidade}" class="form-control" required />
+                <div th:if="${#fields.hasErrors('cidade')}" th:errors="*{cidade}" class="text-danger">Error</div>
+            </div>
+            <div>
+                <label for="estado">State (Estado):</label>
+                <input type="text" id="estado" th:field="*{estado}" class="form-control" required maxlength="2" />
+                <div th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}" class="text-danger">Error</div>
+            </div>
+            <div>
+                <label for="cep">Postal Code (CEP):</label>
+                <input type="text" id="cep" th:field="*{cep}" class="form-control" required />
+                <div th:if="${#fields.hasErrors('cep')}" th:errors="*{cep}" class="text-danger">Error</div>
+            </div>
+            <div style="margin-top: 10px;">
+                <button type="submit" class="btn btn-primary">Save Address</button>
+                <a th:href="@{/cliente/enderecos}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </section>
+</body>
+</html>
