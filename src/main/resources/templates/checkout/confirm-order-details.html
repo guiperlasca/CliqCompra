@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Confirm Order Details</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <h1>Confirm Your Order Details</h1>
+
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+        <!-- Order Summary (from shopping cart) -->
+        <h2>Order Summary</h2>
+        <div th:if="${shoppingCart != null && !#lists.isEmpty(shoppingCart.items)}">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${shoppingCart.items}">
+                        <td th:text="${item.productName}">Product Name</td>
+                        <td th:text="${item.quantity}">1</td>
+                        <td th:text="${#numbers.formatCurrency(item.unitPrice)}">$0.00</td>
+                        <td th:text="${#numbers.formatCurrency(item.subtotal)}">$0.00</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: right;"><strong>Grand Total:</strong></td>
+                        <td th:text="${#numbers.formatCurrency(shoppingCart.grandTotal)}">$0.00</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div th:if="${shoppingCart == null or #lists.isEmpty(shoppingCart.items)}" class="alert alert-warning">
+            Your cart is empty. <a th:href="@{/produtos}">Continue shopping</a>.
+        </div>
+        <hr/>
+
+        <!-- Selected Shipping Address -->
+        <h2>Shipping Address</h2>
+        <div th:if="${selectedEndereco != null}">
+            <p><strong th:text="${selectedEndereco.rua} + ', ' + ${selectedEndereco.numero}">Street, Number</strong></p>
+            <p th:if="${selectedEndereco.complemento != null and !#strings.isEmpty(selectedEndereco.complemento)}" th:text="'Complement: ' + ${selectedEndereco.complemento}"></p>
+            <p th:text="'Neighborhood: ' + ${selectedEndereco.bairro}"></p>
+            <p th:text="'City: ' + ${selectedEndereco.cidade} + ' - ' + ${selectedEndereco.estado}"></p>
+            <p th:text="'CEP: ' + ${selectedEndereco.cep}"></p>
+            <p><a th:href="@{/checkout/address-select}" class="btn btn-sm btn-link">Change Address</a></p>
+        </div>
+        <div th:if="${selectedEndereco == null}" class="alert alert-warning">
+            No shipping address selected. Please <a th:href="@{/checkout/address-select}">select an address</a>.
+        </div>
+        <hr/>
+        
+        <form th:action="@{/checkout/place-order}" method="post" style="margin-top: 20px;">
+            <button type="submit" class="btn btn-success" th:disabled="${selectedEndereco == null or shoppingCart == null or #lists.isEmpty(shoppingCart.items)}">
+                Place Order
+            </button>
+            <a th:href="@{/checkout/address-select}" class="btn btn-secondary" style="margin-left:10px;">Back to Address Selection</a>
+        </form>
+    </section>
+</body>
+</html>

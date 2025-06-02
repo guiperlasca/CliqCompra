@@ -58,7 +58,7 @@
                 <a th:href="@{/produtos}" class="btn btn-secondary" style="margin-right:10px;">Continue Shopping</a>
                 <!-- Conditional Checkout Button -->
                 <th:block th:if="${isUserLoggedIn and loggedInUserType == 'CLIENTE'}">
-                    <a th:href="@{/checkout/confirm}" class="btn btn-success">Proceed to Checkout</a>
+                    <a th:href="@{/checkout/address-select}" class="btn btn-success">Proceed to Checkout</a>
                 </th:block>
                 <th:block th:unless="${isUserLoggedIn and loggedInUserType == 'CLIENTE'}">
                      <p th:if="${!isUserLoggedIn}" style="margin-top:10px;">
