@@ -67,6 +67,8 @@ public class WebController {
         if (loggedInUserEmail != null) {
             model.addAttribute("isUserLoggedIn", true);
             model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+            model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+            model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
         } else {
             model.addAttribute("isUserLoggedIn", false);
         }
@@ -80,6 +82,8 @@ public class WebController {
         if (loggedInUserEmail != null) {
             model.addAttribute("isUserLoggedIn", true);
             model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+            model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+            model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
         } else {
             model.addAttribute("isUserLoggedIn", false);
         }
@@ -90,27 +94,10 @@ public class WebController {
     public String processRegistration(@ModelAttribute("usuarioDto") UsuarioDTO usuarioDto, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         // TODO: Add validation for usuarioDto (e.g., using @Valid and BindingResult)
 
-        Usuario novoUsuario;
-        String userType = usuarioDto.getUserType();
-
-        if ("VENDEDOR".equalsIgnoreCase(userType)) {
-            novoUsuario = new com.trabalho.cliqaqui.model.Vendedor();
-        } else if ("CLIENTE".equalsIgnoreCase(userType)) {
-            novoUsuario = new com.trabalho.cliqaqui.model.Cliente();
-        } else {
-            // Handle invalid or missing userType - redirect back with error
-            model.addAttribute("errorMessage", "Invalid account type selected. Please select Cliente or Vendedor.");
-            model.addAttribute("usuarioDto", usuarioDto); // Send DTO back to repopulate form
-            // Ensure other necessary model attributes for the 'registrar' page are present
-            String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
-            if (loggedInUserEmail != null) {
-                model.addAttribute("isUserLoggedIn", true);
-                model.addAttribute("loggedInUserEmail", loggedInUserEmail);
-            } else {
-                model.addAttribute("isUserLoggedIn", false);
-            }
-            return "registrar";
-        }
+        Usuario novoUsuario = new com.trabalho.cliqaqui.model.Cliente();
+        // The userType variable and the if/else block for VENDEDOR/CLIENTE are no longer needed.
+        // The DTO might still have a userType field, but it won't be used here.
+        // We also need to ensure the registeredUserType variable set later is consistently 'CLIENTE'.
 
         // Set common properties
         novoUsuario.setNome(usuarioDto.getNome());
@@ -125,14 +112,9 @@ public class WebController {
             // Automatic login after successful registration
             session.setAttribute("loggedInUserId", novoUsuario.getId());
             session.setAttribute("loggedInUserEmail", novoUsuario.getEmail());
+            session.setAttribute("loggedInUserName", novoUsuario.getNome());
 
-            String registeredUserType = "USUARIO"; // Default, should be overridden
-            if (novoUsuario instanceof Cliente) {
-                registeredUserType = "CLIENTE";
-            } else if (novoUsuario instanceof Vendedor) {
-                registeredUserType = "VENDEDOR";
-            }
-            session.setAttribute("loggedInUserType", registeredUserType);
+            session.setAttribute("loggedInUserType", "CLIENTE");
 
             redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Welcome, " + novoUsuario.getNome());
             return "redirect:/home"; // Redirect to home page
@@ -146,6 +128,8 @@ public class WebController {
             if (loggedInUserEmail != null) {
                 model.addAttribute("isUserLoggedIn", true);
                 model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+                model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+                model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
             } else {
                 model.addAttribute("isUserLoggedIn", false);
             }
@@ -159,6 +143,8 @@ public class WebController {
         if (loggedInUserEmail != null) {
             model.addAttribute("isUserLoggedIn", true);
             model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+            model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+            model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
         } else {
             model.addAttribute("isUserLoggedIn", false);
         }
@@ -187,6 +173,7 @@ public class WebController {
                     userType = "VENDEDOR";
                 }
                 session.setAttribute("loggedInUserType", userType);
+                session.setAttribute("loggedInUserName", usuario.getNome());
 
                 redirectAttributes.addFlashAttribute("successMessage", "Login successful! Welcome " + usuario.getNome());
                 return "redirect:/home";
@@ -209,6 +196,8 @@ public class WebController {
         if (loggedInUserEmail != null) {
             model.addAttribute("isUserLoggedIn", true);
             model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+            model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+            model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
         } else {
             model.addAttribute("isUserLoggedIn", false);
         }
@@ -230,6 +219,7 @@ public class WebController {
         model.addAttribute("isUserLoggedIn", loggedInUserEmail != null);
         if (loggedInUserEmail != null) {
             model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+            model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
             model.addAttribute("loggedInUserType", userType); // Pass userType for Vendedor links in layout
         }
 
@@ -295,6 +285,7 @@ public class WebController {
             model.addAttribute("isUserLoggedIn", loggedInUserEmail != null);
             if (loggedInUserEmail != null) {
                 model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+                model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
                 model.addAttribute("loggedInUserType", userType);
             }
             return "vendedor/add-product"; // Return to form
@@ -318,6 +309,7 @@ public class WebController {
         String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
         model.addAttribute("isUserLoggedIn", true); // Must be logged in to reach here as Vendedor
         model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+        model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
         model.addAttribute("loggedInUserType", userType);
         
         // Add any specific messages e.g. from adding a product
@@ -372,6 +364,7 @@ public class WebController {
         model.addAttribute("isUserLoggedIn", loggedInUserEmail != null);
         if (loggedInUserEmail != null) {
             model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+            model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
             model.addAttribute("loggedInUserType", userType);
         }
         return "cart/view-cart";
@@ -435,6 +428,7 @@ public class WebController {
         // Add login status for layout
         model.addAttribute("isUserLoggedIn", true);
         model.addAttribute("loggedInUserEmail", (String) session.getAttribute("loggedInUserEmail"));
+        model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
         model.addAttribute("loggedInUserType", userType);
 
         return "checkout/confirm-order";
@@ -558,6 +552,7 @@ public class WebController {
         model.addAttribute("isUserLoggedIn", loggedInUserId != null);
         if (loggedInUserId != null) {
             model.addAttribute("loggedInUserEmail", (String) session.getAttribute("loggedInUserEmail"));
+            model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
             model.addAttribute("loggedInUserType", userType);
         }
         return "checkout/order-confirmation";
@@ -580,6 +575,7 @@ public class WebController {
         // Pass login status and type for layout
         model.addAttribute("isUserLoggedIn", true); // Must be logged in to reach here as Cliente
         model.addAttribute("loggedInUserEmail", (String) session.getAttribute("loggedInUserEmail"));
+        model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
         model.addAttribute("loggedInUserType", userType);
         
         return "cliente/my-orders";
