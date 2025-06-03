@@ -3,29 +3,29 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 <head>
-    <title>Shopping Cart</title>
+    <title>Carrinho de Compras</title>
 </head>
 <body>
     <section layout:fragment="content">
-        <h1>Shopping Cart</h1>
+        <h1>Carrinho de Compras</h1>
 
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
         <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
         
         <div th:if="${shoppingCart == null || #lists.isEmpty(shoppingCart.items)}">
-            <p>Your shopping cart is empty.</p>
-            <p><a th:href="@{/produtos}" class="btn btn-primary">Continue Shopping</a></p>
+            <p>Seu carrinho de compras está vazio.</p>
+            <p><a th:href="@{/produtos}" class="btn btn-primary">Continuar Comprando</a></p>
         </div>
 
         <div th:if="${shoppingCart != null && !#lists.isEmpty(shoppingCart.items)}">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
+                        <th>Produto</th>
+                        <th>Preço</th>
+                        <th>Quantidade</th>
                         <th>Subtotal</th>
-                        <th>Actions</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,37 +35,37 @@
                         <td>
                             <form th:action="@{/cart/update/{productId}(productId=${item.productId})}" method="post" style="display: inline;">
                                 <input type="number" name="quantity" th:value="${item.quantity}" min="1" style="width: 60px;" />
-                                <button type="submit" class="btn btn-sm btn-info">Update</button>
+                                <button type="submit" class="btn btn-sm btn-info">Atualizar</button>
                             </form>
                         </td>
                         <td th:text="${#numbers.formatCurrency(item.subtotal)}">$0.00</td>
                         <td>
                             <form th:action="@{/cart/remove/{productId}(productId=${item.productId})}" method="post" style="display: inline;">
-                                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                <button type="submit" class="btn btn-sm btn-danger">Remover</button>
                             </form>
                         </td>
                     </tr>
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="3" style="text-align: right;"><strong>Grand Total:</strong></td>
+                        <td colspan="3" style="text-align: right;"><strong>Total Geral:</strong></td>
                         <td colspan="2" th:text="${#numbers.formatCurrency(shoppingCart.grandTotal)}">$0.00</td>
                     </tr>
                 </tfoot>
             </table>
             <hr/>
             <div style="text-align: right;">
-                <a th:href="@{/produtos}" class="btn btn-secondary" style="margin-right:10px;">Continue Shopping</a>
+                <a th:href="@{/produtos}" class="btn btn-secondary" style="margin-right:10px;">Continuar Comprando</a>
                 <!-- Conditional Checkout Button -->
                 <th:block th:if="${isUserLoggedIn and loggedInUserType == 'CLIENTE'}">
-                    <a th:href="@{/checkout/address-select}" class="btn btn-success">Proceed to Checkout</a>
+                    <a th:href="@{/checkout/address-select}" class="btn btn-success">Finalizar Compra</a>
                 </th:block>
                 <th:block th:unless="${isUserLoggedIn and loggedInUserType == 'CLIENTE'}">
                      <p th:if="${!isUserLoggedIn}" style="margin-top:10px;">
-                        <a th:href="@{/login}" class="btn btn-warning">Login as Cliente to Checkout</a>
+                        <a th:href="@{/login}" class="btn btn-warning">Entre como Cliente para Finalizar a Compra</a>
                      </p>
                      <p th:if="${isUserLoggedIn and loggedInUserType != 'CLIENTE'}" style="margin-top:10px;" class="text-warning">
-                        Only Clientes can proceed to checkout.
+                        Apenas Clientes podem finalizar a compra.
                      </p>
                 </th:block>
             </div>

@@ -3,24 +3,24 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 <head>
-    <title>Confirm Order Details</title>
+    <title>Confirmar Detalhes do Pedido</title>
 </head>
 <body>
     <section layout:fragment="content">
-        <h1>Confirm Your Order Details</h1>
+        <h1>Confirme os Detalhes do Seu Pedido</h1>
 
         <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
 
         <!-- Order Summary (from shopping cart) -->
-        <h2>Order Summary</h2>
+        <h2>Resumo do Pedido</h2>
         <div th:if="${shoppingCart != null && !#lists.isEmpty(shoppingCart.items)}">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preço Unitário</th>
                         <th>Subtotal</th>
                     </tr>
                 </thead>
@@ -34,37 +34,37 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="3" style="text-align: right;"><strong>Grand Total:</strong></td>
+                        <td colspan="3" style="text-align: right;"><strong>Total Geral:</strong></td>
                         <td th:text="${#numbers.formatCurrency(shoppingCart.grandTotal)}">$0.00</td>
                     </tr>
                 </tfoot>
             </table>
         </div>
         <div th:if="${shoppingCart == null or #lists.isEmpty(shoppingCart.items)}" class="alert alert-warning">
-            Your cart is empty. <a th:href="@{/produtos}">Continue shopping</a>.
+            Seu carrinho está vazio. <a th:href="@{/produtos}">Continuar comprando</a>.
         </div>
         <hr/>
 
         <!-- Selected Shipping Address -->
-        <h2>Shipping Address</h2>
+        <h2>Endereço de Entrega</h2>
         <div th:if="${selectedEndereco != null}">
             <p><strong th:text="${selectedEndereco.rua} + ', ' + ${selectedEndereco.numero}">Street, Number</strong></p>
-            <p th:if="${selectedEndereco.complemento != null and !#strings.isEmpty(selectedEndereco.complemento)}" th:text="'Complement: ' + ${selectedEndereco.complemento}"></p>
-            <p th:text="'Neighborhood: ' + ${selectedEndereco.bairro}"></p>
-            <p th:text="'City: ' + ${selectedEndereco.cidade} + ' - ' + ${selectedEndereco.estado}"></p>
+            <p th:if="${selectedEndereco.complemento != null and !#strings.isEmpty(selectedEndereco.complemento)}" th:text="'Complemento: ' + ${selectedEndereco.complemento}"></p>
+            <p th:text="'Bairro: ' + ${selectedEndereco.bairro}"></p>
+            <p th:text="'Cidade: ' + ${selectedEndereco.cidade} + ' - ' + ${selectedEndereco.estado}"></p>
             <p th:text="'CEP: ' + ${selectedEndereco.cep}"></p>
-            <p><a th:href="@{/checkout/address-select}" class="btn btn-sm btn-link">Change Address</a></p>
+            <p><a th:href="@{/checkout/address-select}" class="btn btn-sm btn-link">Alterar Endereço</a></p>
         </div>
         <div th:if="${selectedEndereco == null}" class="alert alert-warning">
-            No shipping address selected. Please <a th:href="@{/checkout/address-select}">select an address</a>.
+            Nenhum endereço de entrega selecionado. Por favor <a th:href="@{/checkout/address-select}">selecione um endereço</a>.
         </div>
         <hr/>
         
         <form th:action="@{/checkout/place-order}" method="post" style="margin-top: 20px;">
             <button type="submit" class="btn btn-success" th:disabled="${selectedEndereco == null or shoppingCart == null or #lists.isEmpty(shoppingCart.items)}">
-                Place Order
+                Finalizar Pedido
             </button>
-            <a th:href="@{/checkout/address-select}" class="btn btn-secondary" style="margin-left:10px;">Back to Address Selection</a>
+            <a th:href="@{/checkout/address-select}" class="btn btn-secondary" style="margin-left:10px;">Voltar para Seleção de Endereço</a>
         </form>
     </section>
 </body>

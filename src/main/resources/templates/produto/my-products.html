@@ -3,11 +3,11 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 <head>
-    <title>My Products</title>
+    <title>Meus Produtos</title>
 </head>
 <body>
     <section layout:fragment="content">
-        <h1>My Listed Products</h1>
+        <h1>Meus Produtos Anunciados</h1>
 
         <div th:if="${successMessage}" class="alert alert-success">
             <p th:text="${successMessage}"></p>
@@ -16,20 +16,20 @@
             <p th:text="${errorMessage}"></p>
         </div>
 
-        <p><a th:href="@{/produtos/add}" class="btn btn-primary">Add New Product</a></p> <br/>
+        <p><a th:href="@{/produtos/add}" class="btn btn-primary">Adicionar Novo Produto</a></p> <br/>
 
 
         <div th:if="${#lists.isEmpty(produtos)}">
-            <p>You have not listed any products yet.</p>
+            <p>Você ainda não anunciou nenhum produto.</p>
         </div>
 
         <table th:unless="${#lists.isEmpty(produtos)}">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Description</th>
-                    <th>Photo</th>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Descrição</th>
+                    <th>Foto</th>
                     <!-- TODO: Add column for Actions (Edit/Delete) later -->
                 </tr>
             </thead>
@@ -39,8 +39,8 @@
                     <td th:text="${#numbers.formatCurrency(produto.preco)}">0.00</td>
                     <td th:text="${produto.descricao}">Product Description</td>
                     <td>
-                        <img th:if="${produto.fotoUrl != null and not #strings.isEmpty(produto.fotoUrl)}" th:src="@{${produto.fotoUrl}}" alt="Product Image" style="width:100px; height:auto;" />
-                        <span th:if="${produto.fotoUrl == null or #strings.isEmpty(produto.fotoUrl)}">No Image</span>
+                        <img th:if="${produto.fotoUrl != null and not #strings.isEmpty(produto.fotoUrl)}" th:src="@{${produto.fotoUrl}}" alt="Imagem do Produto" style="width:100px; height:auto;" />
+                        <span th:if="${produto.fotoUrl == null or #strings.isEmpty(produto.fotoUrl)}">Sem Imagem</span>
                     </td>
                     <!-- TODO: Add actions links/buttons here later -->
                 </tr>

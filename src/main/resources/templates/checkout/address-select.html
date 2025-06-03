@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 <head>
-    <title>Select Shipping Address</title>
+    <title>Selecionar Endereço de Entrega</title>
     <style>
         .address-list { list-style-type: none; padding: 0; }
         .address-list li { border: 1px solid #ddd; margin-bottom: 10px; padding: 10px; border-radius: 5px; }
@@ -12,25 +12,25 @@
 </head>
 <body>
     <section layout:fragment="content">
-        <h1>Select Shipping Address</h1>
+        <h1>Selecionar Endereço de Entrega</h1>
 
         <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
         <form th:action="@{/checkout/address-select}" method="post">
             <div th:if="${enderecos == null or #lists.isEmpty(enderecos.?[id != null])}">
-                <p>You have no saved addresses. Please add an address to continue.</p>
+                <p>Você não possui endereços salvos. Por favor, adicione um endereço para continuar.</p>
             </div>
 
             <fieldset th:unless="${enderecos == null or #lists.isEmpty(enderecos.?[id != null])}" class="form-group">
-                <legend class="col-form-label">Your Addresses:</legend>
+                <legend class="col-form-label">Seus Endereços:</legend>
                 <ul class="address-list">
                     <li th:each="addr, iterStat : ${enderecos.?[id != null]}">
                         <input type="radio" name="selectedEnderecoId" th:id="'addr_' + ${iterStat.index}" th:value="${addr.id}" th:checked="${iterStat.index == 0}" required="required" />
                         <label th:for="'addr_' + ${iterStat.index}">
                             <strong th:text="${addr.rua} + ', ' + ${addr.numero}">Street, Number</strong><br/>
-                            <span th:if="${addr.complemento != null and not #strings.isEmpty(addr.complemento)}" th:text="'Complement: ' + ${addr.complemento}"></span><span th:if="${addr.complemento != null and not #strings.isEmpty(addr.complemento)}"><br/></span>
-                            <span th:text="'Neighborhood: ' + ${addr.bairro}">Neighborhood</span><br/>
-                            <span th:text="'City: ' + ${addr.cidade} + ' - ' + ${addr.estado}">City - State</span><br/>
+                            <span th:if="${addr.complemento != null and not #strings.isEmpty(addr.complemento)}" th:text="'Complemento: ' + ${addr.complemento}"></span><span th:if="${addr.complemento != null and not #strings.isEmpty(addr.complemento)}"><br/></span>
+                            <span th:text="'Bairro: ' + ${addr.bairro}">Neighborhood</span><br/>
+                            <span th:text="'Cidade: ' + ${addr.cidade} + ' - ' + ${addr.estado}">City - State</span><br/>
                             <span th:text="'CEP: ' + ${addr.cep}">CEP</span>
                         </label>
                     </li>
@@ -38,9 +38,9 @@
             </fieldset>
             
             <div style="margin-top: 20px;">
-                <a th:href="@{/cliente/enderecos/add}" class="btn btn-info">Add New Address</a>
-                <button type="submit" class="btn btn-primary" th:disabled="${enderecos == null or #lists.isEmpty(enderecos.?[id != null])}">Use Selected Address & Continue</button>
-                <a th:href="@{/cart}" class="btn btn-secondary">Back to Cart</a>
+                <a th:href="@{/cliente/enderecos/add}" class="btn btn-info">Adicionar Novo Endereço</a>
+                <button type="submit" class="btn btn-primary" th:disabled="${enderecos == null or #lists.isEmpty(enderecos.?[id != null])}">Usar Endereço Selecionado & Continuar</button>
+                <a th:href="@{/cart}" class="btn btn-secondary">Voltar ao Carrinho</a>
             </div>
         </form>
     </section>
