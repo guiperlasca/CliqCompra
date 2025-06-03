@@ -149,9 +149,19 @@ public class WebController {
     }
 
     @GetMapping("/login")
-    public String login(Model model, HttpSession session) { // Add Model if not there
-        String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
-        if (loggedInUserEmail != null) {
+    public String login(Model model, HttpSession session) { 
+        if (session.getAttribute("loggedInUserId") != null) {
+            return "redirect:/home";
+        }
+        
+        // Existing logic for when user is NOT logged in:
+        String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail"); // This will be null if the above condition was false
+        if (loggedInUserEmail != null) { 
+            // This block effectively might not run if we passed the first check, 
+            // but it's harmless to keep the structure if it simplifies the change.
+            // Or, this part of the logic can be assumed to be within an 'else' 
+            // if the first 'if' was true.
+            // For simplicity, the original structure for populating model when not logged in is fine.
             model.addAttribute("isUserLoggedIn", true);
             model.addAttribute("loggedInUserEmail", loggedInUserEmail);
             model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
@@ -185,6 +195,9 @@ public class WebController {
                 }
                 session.setAttribute("loggedInUserType", userType);
                 session.setAttribute("loggedInUserName", usuario.getNome());
+
+                // Add this line to proactively load/initialize the user's cart:
+                shoppingCartService.getCart(usuario); 
 
                 redirectAttributes.addFlashAttribute("successMessage", "Login realizado com sucesso! Bem-vindo(a) " + usuario.getNome());
                 return "redirect:/home";
@@ -485,59 +498,85 @@ public class WebController {
     @PostMapping("/cart/add/{productId}")
     public String addToCart(@PathVariable("productId") Integer productId,
                             @RequestParam(value = "quantity", defaultValue = "1") int quantity,
-                            HttpSession session, // To check user type if needed, and for general session access
+                            HttpSession session,
                             RedirectAttributes redirectAttributes) {
 
-        // Optional: Check if user is a CLIENTE before adding to cart
-        // String userType = (String) session.getAttribute("loggedInUserType");
-        // if (!"CLIENTE".equals(userType)) {
-        //     redirectAttributes.addFlashAttribute("errorMessage", "Only Clientes can add products to a cart. Please log in as a Cliente.");
-        //     return "redirect:/login";
-        // }
-
-        Optional<Produto> optionalProduto = produtoService.buscarProdutoPorId(productId);
-        if (optionalProduto.isPresent()) {
-            Produto produto = optionalProduto.get();
-            try {
-                shoppingCartService.addItem(produto, quantity);
-                redirectAttributes.addFlashAttribute("successMessage", produto.getNome() + " adicionado ao carrinho!");
-            } catch (Exception e) { // Catch any potential exceptions from cart service
-                // Log e.printStackTrace();
-                redirectAttributes.addFlashAttribute("errorMessage", "Erro ao adicionar produto ao carrinho. Por favor, tente novamente.");
-            }
-        } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "Produto não encontrado!");
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para adicionar itens ao carrinho.");
+            return "redirect:/login";
         }
 
-        // Redirect back to the products page, or ideally the referer.
-        // For simplicity, redirecting to products page.
-        return "redirect:/produtos";
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
+        if (optionalUsuario.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Usuário não encontrado.");
+            return "redirect:/login";
+        }
+        Usuario usuario = optionalUsuario.get();
+        
+        try {
+            shoppingCartService.addItem(usuario, productId, quantity); 
+            redirectAttributes.addFlashAttribute("successMessage", "Produto adicionado ao carrinho!");
+        } catch (jakarta.persistence.EntityNotFoundException e) { // More specific catch
+             redirectAttributes.addFlashAttribute("errorMessage", "Produto não encontrado!");
+        } catch (IllegalArgumentException e) { // Catch validation errors from service
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) { 
+            // Log e.printStackTrace(); // Good practice to log unexpected errors
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao adicionar produto ao carrinho. Por favor, tente novamente.");
+        }
+        return "redirect:/produtos"; // Or redirect to cart page: "redirect:/cart"
     }
 
     @GetMapping("/cart")
-    public String viewCart(Model model, HttpSession session) {
-        ShoppingCartDTO cartDto = shoppingCartService.getCart(); // Assumes shoppingCartService is injected
-        model.addAttribute("shoppingCart", cartDto);
+    public String viewCart(Model model, HttpSession session, RedirectAttributes redirectAttributes) { // Added RedirectAttributes
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        ShoppingCartDTO cartDto;
 
-        // Add login status for layout and conditional checkout button
-        String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
-        String userType = (String) session.getAttribute("loggedInUserType");
-        model.addAttribute("isUserLoggedIn", loggedInUserEmail != null);
-        if (loggedInUserEmail != null) {
-            model.addAttribute("loggedInUserEmail", loggedInUserEmail);
-            model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
-            model.addAttribute("loggedInUserType", userType);
+        if (loggedInUserId == null) {
+            cartDto = new ShoppingCartDTO(); 
+            model.addAttribute("isUserLoggedIn", false);
+        } else {
+            Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
+            if (optionalUsuario.isEmpty()) {
+                cartDto = new ShoppingCartDTO();
+                model.addAttribute("isUserLoggedIn", false); // Treat as not logged in for cart
+                model.addAttribute("errorMessage", "Não foi possível carregar os dados do usuário para o carrinho.");
+            } else {
+                Usuario usuario = optionalUsuario.get();
+                cartDto = shoppingCartService.getCart(usuario);
+                model.addAttribute("isUserLoggedIn", true);
+                model.addAttribute("loggedInUserEmail", usuario.getEmail());
+                model.addAttribute("loggedInUserName", usuario.getNome());
+                model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType")); 
+            }
         }
+        model.addAttribute("shoppingCart", cartDto);
         return "cart/view-cart";
     }
 
     @PostMapping("/cart/update/{productId}")
     public String updateCartItem(@PathVariable("productId") Integer productId,
                                @RequestParam("quantity") int quantity,
+                               HttpSession session, // Added HttpSession
                                RedirectAttributes redirectAttributes) {
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para atualizar seu carrinho.");
+            return "redirect:/login";
+        }
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
+        if (optionalUsuario.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Usuário não encontrado.");
+            return "redirect:/login";
+        }
+        Usuario usuario = optionalUsuario.get();
+
         try {
-            shoppingCartService.updateItemQuantity(productId, quantity);
+            shoppingCartService.updateItemQuantity(usuario, productId, quantity);
             redirectAttributes.addFlashAttribute("successMessage", "Carrinho atualizado com sucesso.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         } catch (Exception e) {
             // Log e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", "Erro ao atualizar carrinho. Por favor, tente novamente.");
@@ -547,10 +586,25 @@ public class WebController {
 
     @PostMapping("/cart/remove/{productId}")
     public String removeCartItem(@PathVariable("productId") Integer productId,
+                               HttpSession session, // Added HttpSession
                                RedirectAttributes redirectAttributes) {
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para remover itens do seu carrinho.");
+            return "redirect:/login";
+        }
+        Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
+        if (optionalUsuario.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Usuário não encontrado.");
+            return "redirect:/login";
+        }
+        Usuario usuario = optionalUsuario.get();
+
         try {
-            shoppingCartService.removeItem(productId);
+            shoppingCartService.removeItem(usuario, productId);
             redirectAttributes.addFlashAttribute("successMessage", "Item removido do carrinho.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         } catch (Exception e) {
             // Log e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", "Erro ao remover item do carrinho. Por favor, tente novamente.");

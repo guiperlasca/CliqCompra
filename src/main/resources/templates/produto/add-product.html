@@ -37,6 +37,26 @@
                 <input type="file" id="fotoFile" name="fotoFile" />
                 <!-- TODO: Add validation error display here later if needed -->
             </div>
+
+            <!-- Category Selection -->
+            <div style="margin-top: 15px; margin-bottom: 15px;">
+                <label>Categorias:</label> <!-- Label for the section -->
+                <div th:if="${allCategorias == null or #lists.isEmpty(allCategorias)}">
+                    <p>Nenhuma categoria disponível no momento.</p> 
+                    <!-- More user-friendly message if admin manages categories -->
+                    <!-- <p>Nenhuma categoria cadastrada. Novas categorias podem ser adicionadas por um administrador.</p> -->
+                </div>
+                <div th:unless="${allCategorias == null or #lists.isEmpty(allCategorias)}" class="form-check-group" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+                    <div th:each="categoria : ${allCategorias}" class="form-check">
+                        <input class="form-check-input" type="checkbox" th:field="*{categoriaIds}" th:value="${categoria.id}" th:id="'cat_' + ${categoria.id}" />
+                        <label class="form-check-label" th:for="'cat_' + ${categoria.id}" th:text="${categoria.nome}">Nome da Categoria</label>
+                    </div>
+                </div>
+                <!-- TODO: Add Thymeleaf validation error display for categoriaIds if using @Valid in DTO, e.g.,
+                     <div th:if="${#fields.hasErrors('categoriaIds')}" th:errors="*{categoriaIds}" class="text-danger">Erro de Categoria</div> 
+                -->
+            </div>
+
             <div>
                 <button type="submit">Adicionar Produto</button>
             </div>
