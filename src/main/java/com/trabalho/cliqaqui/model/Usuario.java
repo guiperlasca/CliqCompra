@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.FetchType;
 // import com.trabalho.cliqaqui.model.Produto; // Already in same package
+// import com.trabalho.cliqaqui.model.Carrinho; // Already in same package
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -27,6 +30,9 @@ public abstract class Usuario {
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Produto> produtos = new ArrayList<>();
+
+    @OneToOne(mappedBy="usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Carrinho carrinho;
 
     public Usuario() {
     }
@@ -94,5 +100,17 @@ public abstract class Usuario {
 
     public void setProdutos(List<Produto> produtos) {
         this.produtos = produtos;
+    }
+
+    public Carrinho getCarrinho() {
+        return carrinho;
+    }
+
+    public void setCarrinho(Carrinho carrinho) {
+        this.carrinho = carrinho;
+        // Optional: for true bidirectionality, ensure the other side is set if not null
+        // if (carrinho != null && carrinho.getUsuario() != this) {
+        //     carrinho.setUsuario(this);
+        // }
     }
 }
