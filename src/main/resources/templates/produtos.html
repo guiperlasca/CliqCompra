@@ -9,6 +9,25 @@
     <section layout:fragment="content">
         <h1>Nossos Produtos</h1>
 
+        <!-- Category Filter Section -->
+        <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #eee; border-radius: 5px;">
+            <h4>Filtrar por Categoria:</h4>
+            <a th:href="@{/produtos}" class="btn btn-outline-primary btn-sm" style="margin-right: 5px; margin-bottom: 5px;">Todas</a>
+            <th:block th:if="${allCategorias != null and not #lists.isEmpty(allCategorias)}">
+                <a th:each="cat : ${allCategorias}"
+                   th:href="@{/produtos(categoriaId=${cat.id})}"
+                   th:text="${cat.nome}"
+                   class="btn btn-outline-secondary btn-sm" style="margin-right: 5px; margin-bottom: 5px;"
+                   th:classappend="${#request.getParameter('categoriaId') != null and #strings.equals(#request.getParameter('categoriaId'), cat.id.toString())} ? 'active' : ''">
+                    Nome da Categoria
+                </a>
+            </th:block>
+            <p th:if="${allCategorias == null or #lists.isEmpty(allCategorias)}" style="margin-top: 10px;">
+                Nenhuma categoria disponível para filtro.
+            </p>
+        </div>
+        <hr style="margin-bottom: 20px;"/>
+
         <div th:if="${#lists.isEmpty(produtos)}">
             <p>Nenhum produto disponível no momento.</p>
         </div>

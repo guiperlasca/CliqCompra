@@ -31,7 +31,7 @@ public class ShoppingCartService {
     private final CarrinhoRepository carrinhoRepository;
     private final ItemCarrinhoRepository itemCarrinhoRepository;
     private final ProdutoService produtoService; // Assuming this is needed for product details
-    private final UsuarioRepository usuarioRepository; 
+    private final UsuarioRepository usuarioRepository;
 
     @Autowired
     public ShoppingCartService(CarrinhoRepository carrinhoRepository,
@@ -65,12 +65,12 @@ public class ShoppingCartService {
             carrinho = new Carrinho();
             carrinho.setUsuario(usuario);
             // dataUltimaModificacao will be set by @UpdateTimestamp
-            // No need to explicitly save here if we save at the end, 
+            // No need to explicitly save here if we save at the end,
             // and cascade will handle new Carrinho if it's linked to Usuario properly.
             // However, to get an ID for ItemCarrinho if it were saved first, we might need to save.
             // For simplicity with cascade, let's ensure it's managed before adding items.
             // This also ensures that if usuario.setCarrinho is used, it has an ID.
-             carrinho = carrinhoRepository.save(carrinho); 
+             carrinho = carrinhoRepository.save(carrinho);
         } else {
             carrinho = optionalCarrinho.get();
         }
@@ -128,14 +128,14 @@ public class ShoppingCartService {
             } else {
                 // Quantity is zero or negative, so remove the item
                 carrinho.getItens().remove(itemToUpdate);
-                // No need to call itemCarrinhoRepository.delete(itemToUpdate); 
+                // No need to call itemCarrinhoRepository.delete(itemToUpdate);
                 // if orphanRemoval=true is set on Carrinho.itens and CascadeType.ALL includes REMOVE.
                 changed = true;
             }
         } else {
             // Product not in cart, so nothing to update.
             // Can log a warning if this scenario is unexpected.
-            return; 
+            return;
         }
 
         if (changed) {
@@ -185,7 +185,7 @@ public class ShoppingCartService {
             // Option 1: Throw exception
             // throw new IllegalArgumentException("Usuario não pode ser nulo para obter o carrinho.");
             // Option 2: Return an empty cart, which might be simpler for controllers
-            return new ShoppingCartDTO(); 
+            return new ShoppingCartDTO();
         }
 
         Optional<Carrinho> optionalCarrinho = carrinhoRepository.findByUsuario(usuario);
@@ -196,7 +196,7 @@ public class ShoppingCartService {
             carrinho.setUsuario(usuario);
             // dataUltimaModificacao will be set by @UpdateTimestamp on save
             carrinho = carrinhoRepository.save(carrinho); // Save and get the persisted cart with ID
-            // Note: If the 'usuario' object is managed by Hibernate and this new 'carrinho' 
+            // Note: If the 'usuario' object is managed by Hibernate and this new 'carrinho'
             // needs to be reflected in 'usuario.getCarrinho()' within the same Hibernate session
             // without re-fetching 'usuario', then 'usuario.setCarrinho(carrinho);' might be needed here.
             // However, since Carrinho is the owner of the relationship via 'usuario_id',
@@ -222,7 +222,7 @@ public class ShoppingCartService {
                 }
             }
         }
-        
+
         cartDto.setItems(itemDtos);
         cartDto.recalculateGrandTotal(); // Helper method in ShoppingCartDTO
 

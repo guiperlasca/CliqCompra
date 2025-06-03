@@ -13,9 +13,9 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
     Optional<Categoria> findByNomeIgnoreCase(String nome);
 
     List<Categoria> findAllByOrderByNameAsc();
-    
+
     // For Phase 2, Step 7 (processAddProduct), if needing to fetch multiple categories by ID:
-    // List<Categoria> findAllByIdIn(List<Integer> ids); 
+    // List<Categoria> findAllByIdIn(List<Integer> ids);
     // This can be added later if findAllById (from JpaRepository) isn't sufficient or if specific ordering is needed.
     // JpaRepository already provides List<T> findAllById(Iterable<ID> ids);
 }
