@@ -3,11 +3,11 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 <head>
-    <title>Add New Product</title>
+    <title>Adicionar Novo Produto</title>
 </head>
 <body>
     <section layout:fragment="content">
-        <h1>Add New Product</h1>
+        <h1>Adicionar Novo Produto</h1>
 
         <div th:if="${errorMessage}" class="alert alert-danger">
             <p th:text="${errorMessage}"></p>
@@ -18,27 +18,27 @@
 
         <form th:action="@{/produtos/add}" th:object="${produtoDto}" method="post" enctype="multipart/form-data">
             <div>
-                <label for="nome">Product Name:</label>
+                <label for="nome">Nome do Produto:</label>
                 <input type="text" id="nome" th:field="*{nome}" required />
                 <!-- TODO: Add validation error display here later if needed -->
             </div>
             <div>
-                <label for="preco">Price:</label>
+                <label for="preco">Preço:</label>
                 <input type="number" step="0.01" id="preco" th:field="*{preco}" required />
                 <!-- TODO: Add validation error display here later if needed -->
             </div>
             <div>
-                <label for="descricao">Description:</label>
+                <label for="descricao">Descrição:</label>
                 <textarea id="descricao" th:field="*{descricao}" rows="4" required></textarea>
                 <!-- TODO: Add validation error display here later if needed -->
             </div>
             <div>
-                <label for="fotoFile">Product Photo:</label>
+                <label for="fotoFile">Foto do Produto:</label>
                 <input type="file" id="fotoFile" name="fotoFile" />
                 <!-- TODO: Add validation error display here later if needed -->
             </div>
             <div>
-                <button type="submit">Add Product</button>
+                <button type="submit">Adicionar Produto</button>
             </div>
         </form>
     </section>
