@@ -59,7 +59,7 @@ Para alcançar o objetivo de ser uma plataforma de intermediação de vendas com
 ## Modelo de Dados (UML)
 A estrutura do modelo de dados do sistema está representada no diagrama UML abaixo, que foi concebido para suportar as funcionalidades atuais e futuras da plataforma:
 
-plantuml
+```plantuml
 @startuml
 skinparam classAttributeIconSize 0
 
