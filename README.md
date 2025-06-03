@@ -170,8 +170,8 @@ Apache Maven (ferramenta de build)
 ## Autores
 Este projeto foi desenvolvido por:
 
-Alexandre Foppa
-Arthur Portaluppi
-Guilherme Perlasca
-João Caumo
-Kauã Xavier
+- Alexandre Foppa
+- Arthur Portaluppi
+- Guilherme Perlasca
+- João Caumo
+- Kauã Xavier
