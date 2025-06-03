@@ -36,7 +36,7 @@
                     </li>
                 </ul>
             </fieldset>
-            
+
             <div style="margin-top: 20px;">
                 <a th:href="@{/cliente/enderecos/add}" class="btn btn-info">Adicionar Novo Endereço</a>
                 <button type="submit" class="btn btn-primary" th:disabled="${enderecos == null or #lists.isEmpty(enderecos.?[id != null])}">Usar Endereço Selecionado & Continuar</button>

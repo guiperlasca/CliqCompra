@@ -59,7 +59,7 @@
             Nenhum endereço de entrega selecionado. Por favor <a th:href="@{/checkout/address-select}">selecione um endereço</a>.
         </div>
         <hr/>
-        
+
         <form th:action="@{/checkout/place-order}" method="post" style="margin-top: 20px;">
             <button type="submit" class="btn btn-success" th:disabled="${selectedEndereco == null or shoppingCart == null or #lists.isEmpty(shoppingCart.items)}">
                 Finalizar Pedido

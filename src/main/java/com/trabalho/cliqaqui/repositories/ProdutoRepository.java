@@ -9,5 +9,6 @@ import java.util.List; // Ensure this import is present
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
     List<Produto> findByUsuarioId(Integer usuarioId);
+    List<Produto> findByCategorias_Id(Integer categoriaId); // New method
     // Custom query methods can be added here later if needed
 }

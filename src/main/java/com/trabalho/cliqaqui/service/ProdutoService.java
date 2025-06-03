@@ -38,4 +38,13 @@ public class ProdutoService {
     public List<Produto> listarProdutosPorUsuario(Integer usuarioId) {
         return produtoRepository.findByUsuarioId(usuarioId);
     }
+
+    public List<Produto> listarProdutosPorCategoria(Integer categoriaId) {
+        // The controller should ensure categoriaId is not null if filtering is intended.
+        // If categoriaId is null here, findByCategorias_Id might behave unexpectedly
+        // or throw an error depending on DB/JPA provider if the generated query is invalid.
+        // It's safer if the controller handles the "all products" case explicitly.
+        // Assuming categoriaId will be non-null if this method is called for filtering.
+        return produtoRepository.findByCategorias_Id(categoriaId);
+    }
 }

@@ -14,6 +14,8 @@ import com.trabalho.cliqaqui.model.Usuario;
 import com.trabalho.cliqaqui.model.Cliente; // Added import
 import com.trabalho.cliqaqui.model.Vendedor; // Added import
 import com.trabalho.cliqaqui.repositories.UsuarioRepository; // Added import
+import com.trabalho.cliqaqui.repositories.CategoriaRepository; // Corrected import, should have been added in previous step
+import com.trabalho.cliqaqui.model.Categoria; // For List<Categoria>
 import com.trabalho.cliqaqui.service.PasswordService;
 import com.trabalho.cliqaqui.service.ProdutoService;
 import com.trabalho.cliqaqui.service.ShoppingCartService; // Added import
@@ -37,6 +39,7 @@ import com.trabalho.cliqaqui.model.ItemPedido; // Added import
 import com.trabalho.cliqaqui.model.Pedido; // Added import
 import com.trabalho.cliqaqui.model.StatusPedido; // Added import
 import com.trabalho.cliqaqui.service.PedidoService; // Added import
+import com.trabalho.cliqaqui.repositories.CategoriaRepository; // Added import
 
 import java.sql.Timestamp; // Added import
 import java.time.Instant; // Added import
@@ -56,6 +59,7 @@ public class WebController {
     private final UsuarioRepository usuarioRepository;
     private final ShoppingCartService shoppingCartService;
     private final PedidoService pedidoService; // Added field
+    private final CategoriaRepository categoriaRepository; // New field
 
     @Autowired
     public WebController(ProdutoService produtoService,
@@ -63,13 +67,15 @@ public class WebController {
                          PasswordService passwordService,
                          UsuarioRepository usuarioRepository,
                          ShoppingCartService shoppingCartService,
-                         PedidoService pedidoService) { // Added to constructor
+                         PedidoService pedidoService,
+                         CategoriaRepository categoriaRepository) { // New parameter
         this.produtoService = produtoService;
         this.usuarioService = usuarioService;
         this.passwordService = passwordService;
         this.usuarioRepository = usuarioRepository;
         this.shoppingCartService = shoppingCartService;
         this.pedidoService = pedidoService; // Initialize field
+        this.categoriaRepository = categoriaRepository; // New assignment
     }
 
     @GetMapping({"/", "/home"})
@@ -149,17 +155,17 @@ public class WebController {
     }
 
     @GetMapping("/login")
-    public String login(Model model, HttpSession session) { 
+    public String login(Model model, HttpSession session) {
         if (session.getAttribute("loggedInUserId") != null) {
             return "redirect:/home";
         }
-        
+
         // Existing logic for when user is NOT logged in:
         String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail"); // This will be null if the above condition was false
-        if (loggedInUserEmail != null) { 
-            // This block effectively might not run if we passed the first check, 
+        if (loggedInUserEmail != null) {
+            // This block effectively might not run if we passed the first check,
             // but it's harmless to keep the structure if it simplifies the change.
-            // Or, this part of the logic can be assumed to be within an 'else' 
+            // Or, this part of the logic can be assumed to be within an 'else'
             // if the first 'if' was true.
             // For simplicity, the original structure for populating model when not logged in is fine.
             model.addAttribute("isUserLoggedIn", true);
@@ -197,7 +203,7 @@ public class WebController {
                 session.setAttribute("loggedInUserName", usuario.getNome());
 
                 // Add this line to proactively load/initialize the user's cart:
-                shoppingCartService.getCart(usuario); 
+                shoppingCartService.getCart(usuario);
 
                 redirectAttributes.addFlashAttribute("successMessage", "Login realizado com sucesso! Bem-vindo(a) " + usuario.getNome());
                 return "redirect:/home";
@@ -210,9 +216,17 @@ public class WebController {
     }
 
     @GetMapping("/produtos")
-    public String produtos(Model model, HttpSession session) { // Model and session were already params or need to be added
-        // Original logic for products
-        List<Produto> productList = produtoService.listarTodosProdutos();
+    public String produtos(Model model, HttpSession session, @RequestParam(name = "categoriaId", required = false) Integer categoriaId) {
+        List<Categoria> allCategorias = categoriaRepository.findAllByOrderByNameAsc();
+        model.addAttribute("allCategorias", allCategorias);
+
+        List<Produto> productList;
+        if (categoriaId != null) {
+            productList = produtoService.listarProdutosPorCategoria(categoriaId);
+            model.addAttribute("selectedCategoriaId", categoriaId); // Optional: to help view highlight active filter
+        } else {
+            productList = produtoService.listarTodosProdutos();
+        }
         model.addAttribute("produtos", productList);
         
         // Add login status
@@ -254,6 +268,8 @@ public class WebController {
         }
         // Removed VENDEDOR specific check
 
+        List<Categoria> allCategorias = categoriaRepository.findAllByOrderByNameAsc();
+        model.addAttribute("allCategorias", allCategorias);
         model.addAttribute("produtoDto", new ProdutoDTO());
         return "produto/add-product";
     }
@@ -301,6 +317,15 @@ public class WebController {
         produto.setDescricao(produtoDto.getDescricao());
         produto.setUsuario(usuario); // Associate with the logged-in Usuario
 
+        // Category Processing
+        List<Integer> categoriaIds = produtoDto.getCategoriaIds();
+        if (categoriaIds != null && !categoriaIds.isEmpty()) {
+            List<com.trabalho.cliqaqui.model.Categoria> fetchedCategorias = categoriaRepository.findAllById(categoriaIds);
+            produto.setCategorias(fetchedCategorias);
+        } else {
+            produto.setCategorias(new ArrayList<>()); // Set to empty list if no categories selected
+        }
+
         if (fotoFile != null && !fotoFile.isEmpty()) {
             try {
                 // Ensure the upload directory exists
@@ -315,10 +340,10 @@ public class WebController {
                     fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
                 }
                 String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
-                
+
                 Path filePath = uploadPath.resolve(uniqueFileName);
                 Files.copy(fotoFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                
+
                 produto.setFotoUrl(UPLOAD_DIR_WEB_PATH + uniqueFileName); // Store web-accessible path
 
             } catch (IOException e) {
@@ -327,7 +352,7 @@ public class WebController {
                 model.addAttribute("errorMessage", "Falha no upload da foto, produto salvo sem foto. Erro: " + e.getMessage());
                 // If you want to stop product creation on photo error, uncomment below and comment out the model.addAttribute above
                 // redirectAttributes.addFlashAttribute("errorMessage", "Falha no upload da foto: " + e.getMessage());
-                // return "redirect:/produtos/add"; 
+                // return "redirect:/produtos/add";
             }
         } else {
             produto.setFotoUrl(null); // Or some default photo path
@@ -352,6 +377,46 @@ public class WebController {
             }
             return "produto/add-product";
         }
+    }
+
+    @PostMapping("/produtos/delete/{productId}")
+    public String deleteProduct(@PathVariable("productId") Integer productId,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para excluir produtos.");
+            return "redirect:/login";
+        }
+
+        Optional<Produto> optionalProduto = produtoService.buscarProdutoPorId(productId);
+
+        if (optionalProduto.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Produto não encontrado.");
+            return "redirect:/produtos/my";
+        }
+
+        Produto produto = optionalProduto.get();
+
+        // Ownership Check
+        if (produto.getUsuario() == null || !produto.getUsuario().getId().equals(loggedInUserId)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Você não tem permissão para excluir este produto.");
+            return "redirect:/produtos/my";
+        }
+
+        try {
+            // Assuming produtoService.deletarProduto(productId) handles deleting related entities if necessary,
+            // or that the database schema has appropriate cascade delete options.
+            // For example, if product photos are stored files, that logic would also need to be handled here or in service.
+            produtoService.deletarProduto(productId);
+            redirectAttributes.addFlashAttribute("successMessage", "Produto excluído com sucesso.");
+        } catch (Exception e) {
+            // Log the exception e.g. e.printStackTrace(); // Good practice
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao excluir o produto: " + e.getMessage());
+        }
+
+        return "redirect:/produtos/my";
     }
 
     @GetMapping("/produtos/my") // Renamed mapping
@@ -444,8 +509,8 @@ public class WebController {
         if (cliente.getEnderecos() == null) {
             cliente.setEnderecos(new ArrayList<>());
         }
-        cliente.getEnderecos().add(endereco); 
-        
+        cliente.getEnderecos().add(endereco);
+
         try {
             usuarioService.salvarUsuario(cliente); // Assuming UsuarioService.salvarUsuario() handles cascading saves for Cliente
             redirectAttributes.addFlashAttribute("successMessage", "Endereço adicionado com sucesso!");
@@ -484,14 +549,14 @@ public class WebController {
         Cliente cliente = (Cliente) optionalUsuario.get();
 
         model.addAttribute("enderecos", cliente.getEnderecos());
-        
+
         // Add common model attributes for layout
         String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
         model.addAttribute("isUserLoggedIn", true);
         model.addAttribute("loggedInUserEmail", loggedInUserEmail);
         model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
         model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
-        
+
         return "cliente/my-addresses";
     }
 
@@ -513,15 +578,15 @@ public class WebController {
             return "redirect:/login";
         }
         Usuario usuario = optionalUsuario.get();
-        
+
         try {
-            shoppingCartService.addItem(usuario, productId, quantity); 
+            shoppingCartService.addItem(usuario, productId, quantity);
             redirectAttributes.addFlashAttribute("successMessage", "Produto adicionado ao carrinho!");
         } catch (jakarta.persistence.EntityNotFoundException e) { // More specific catch
              redirectAttributes.addFlashAttribute("errorMessage", "Produto não encontrado!");
         } catch (IllegalArgumentException e) { // Catch validation errors from service
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-        } catch (Exception e) { 
+        } catch (Exception e) {
             // Log e.printStackTrace(); // Good practice to log unexpected errors
             redirectAttributes.addFlashAttribute("errorMessage", "Erro ao adicionar produto ao carrinho. Por favor, tente novamente.");
         }
@@ -534,7 +599,7 @@ public class WebController {
         ShoppingCartDTO cartDto;
 
         if (loggedInUserId == null) {
-            cartDto = new ShoppingCartDTO(); 
+            cartDto = new ShoppingCartDTO();
             model.addAttribute("isUserLoggedIn", false);
         } else {
             Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
@@ -548,7 +613,7 @@ public class WebController {
                 model.addAttribute("isUserLoggedIn", true);
                 model.addAttribute("loggedInUserEmail", usuario.getEmail());
                 model.addAttribute("loggedInUserName", usuario.getNome());
-                model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType")); 
+                model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
             }
         }
         model.addAttribute("shoppingCart", cartDto);
@@ -624,7 +689,7 @@ public class WebController {
         if (!"CLIENTE".equals(userType)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Apenas Clientes podem prosseguir para o checkout.");
             // Or redirect to home if they are some other logged-in type
-            return "redirect:/cart"; 
+            return "redirect:/cart";
         }
 
         // Check if cart is empty
@@ -682,7 +747,7 @@ public class WebController {
              redirectAttributes.addFlashAttribute("errorMessage", "Por favor, selecione um endereço de entrega.");
              return "redirect:/checkout/address-select";
         }
-        
+
         session.setAttribute("selectedEnderecoId", selectedEnderecoId);
         return "redirect:/checkout/confirm-order-details"; // Next step in checkout
     }
@@ -698,7 +763,7 @@ public class WebController {
         }
         if (!"CLIENTE".equals(userType)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Apenas Clientes podem confirmar pedidos.");
-            return "redirect:/cart"; 
+            return "redirect:/cart";
         }
 
         ShoppingCartDTO cart = shoppingCartService.getCart();
@@ -716,10 +781,10 @@ public class WebController {
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
         if (!optionalUsuario.isPresent() || !(optionalUsuario.get() instanceof Cliente)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Não foi possível encontrar os detalhes da sua conta de cliente.");
-            return "redirect:/login"; 
+            return "redirect:/login";
         }
         Cliente cliente = (Cliente) optionalUsuario.get();
-        
+
         Optional<Endereco> selectedEnderecoOpt = cliente.getEnderecos().stream()
                 .filter(e -> e.getId().equals(selectedEnderecoId))
                 .findFirst();
@@ -729,7 +794,7 @@ public class WebController {
             session.removeAttribute("selectedEnderecoId"); // Clear invalid ID
             return "redirect:/checkout/address-select";
         }
-        
+
         model.addAttribute("shoppingCart", cart);
         model.addAttribute("selectedEndereco", selectedEnderecoOpt.get());
 

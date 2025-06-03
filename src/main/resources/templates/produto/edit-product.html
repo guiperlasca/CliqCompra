@@ -3,11 +3,11 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 <head>
-    <title>Adicionar Novo Produto</title>
+    <title>Editar Produto</title>
 </head>
 <body>
     <section layout:fragment="content">
-        <h1>Adicionar Novo Produto</h1>
+        <h1>Editar Produto</h1>
 
         <div th:if="${errorMessage}" class="alert alert-danger">
             <p th:text="${errorMessage}"></p>
@@ -16,7 +16,8 @@
             <p th:text="${successMessage}"></p>
         </div>
 
-        <form th:action="@{/produtos/add}" th:object="${produtoDto}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/produtos/edit/{id}(id=${produtoDto.id})}" th:object="${produtoDto}" method="post" enctype="multipart/form-data">
+            <input type="hidden" th:field="*{id}" /> <!-- Ensure ID is submitted for update -->
             <div>
                 <label for="nome">Nome do Produto:</label>
                 <input type="text" id="nome" th:field="*{nome}" required />
@@ -32,8 +33,18 @@
                 <textarea id="descricao" th:field="*{descricao}" rows="4" required></textarea>
                 <!-- TODO: Add validation error display here later if needed -->
             </div>
+
             <div>
-                <label for="fotoFile">Foto do Produto:</label>
+                <label>Foto Atual:</label>
+                <div th:if="${produtoDto.currentFotoUrl != null and not #strings.isEmpty(produtoDto.currentFotoUrl)}">
+                    <img th:src="@{${produtoDto.currentFotoUrl}}" alt="Foto Atual do Produto" style="width:150px; height:auto; margin-bottom:10px;" />
+                </div>
+                <div th:if="${produtoDto.currentFotoUrl == null or #strings.isEmpty(produtoDto.currentFotoUrl)}">
+                    <p>Nenhuma foto cadastrada.</p>
+                </div>
+            </div>
+            <div>
+                <label for="fotoFile">Alterar Foto (opcional):</label>
                 <input type="file" id="fotoFile" name="fotoFile" />
                 <!-- TODO: Add validation error display here later if needed -->
             </div>
@@ -43,8 +54,6 @@
                 <label>Categorias:</label> <!-- Label for the section -->
                 <div th:if="${allCategorias == null or #lists.isEmpty(allCategorias)}">
                     <p>Nenhuma categoria disponível no momento.</p>
-                    <!-- More user-friendly message if admin manages categories -->
-                    <!-- <p>Nenhuma categoria cadastrada. Novas categorias podem ser adicionadas por um administrador.</p> -->
                 </div>
                 <div th:unless="${allCategorias == null or #lists.isEmpty(allCategorias)}" class="form-check-group" style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
                     <div th:each="categoria : ${allCategorias}" class="form-check">
@@ -52,13 +61,10 @@
                         <label class="form-check-label" th:for="'cat_' + ${categoria.id}" th:text="${categoria.nome}">Nome da Categoria</label>
                     </div>
                 </div>
-                <!-- TODO: Add Thymeleaf validation error display for categoriaIds if using @Valid in DTO, e.g.,
-                     <div th:if="${#fields.hasErrors('categoriaIds')}" th:errors="*{categoriaIds}" class="text-danger">Erro de Categoria</div>
-                -->
             </div>
 
             <div>
-                <button type="submit">Adicionar Produto</button>
+                <button type="submit">Salvar Alterações</button>
             </div>
         </form>
     </section>
