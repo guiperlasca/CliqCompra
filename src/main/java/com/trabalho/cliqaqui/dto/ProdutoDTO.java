@@ -1,12 +1,15 @@
 package com.trabalho.cliqaqui.dto;
 
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+import java.util.ArrayList;
 
 public class ProdutoDTO {
     private String nome;
     private double preco;
     private String descricao;
     private MultipartFile fotoFile;
+    private List<Integer> categoriaIds = new ArrayList<>(); // Initialize to prevent NPE
     // Categories can be added later if needed.
 
     public ProdutoDTO() {
@@ -43,5 +46,13 @@ public class ProdutoDTO {
 
     public void setFotoFile(MultipartFile fotoFile) {
         this.fotoFile = fotoFile;
+    }
+
+    public List<Integer> getCategoriaIds() {
+        return categoriaIds;
+    }
+
+    public void setCategoriaIds(List<Integer> categoriaIds) {
+        this.categoriaIds = categoriaIds;
     }
 }

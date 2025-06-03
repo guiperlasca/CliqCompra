@@ -86,13 +86,27 @@ public class Produto {
         this.usuario = usuario;
     }
 
-    public void adicionarCategoria(Categoria categoria) {
-        // Placeholder: Actual logic would involve adding to this.categorias
-        // this.categorias.add(categoria);
+    public void addCategoria(Categoria categoria) {
+        if (this.categorias == null) {
+            this.categorias = new ArrayList<>();
+        }
+        if (!this.categorias.contains(categoria)) {
+            this.categorias.add(categoria);
+            if (categoria.getProdutos() == null) { // Ensure other side's list is initialized
+                categoria.setProdutos(new ArrayList<>());
+            }
+            if (!categoria.getProdutos().contains(this)) {
+                categoria.getProdutos().add(this);
+            }
+        }
     }
 
-    public void removerCategoria(Categoria categoria) {
-        // Placeholder: Actual logic would involve removing from this.categorias
-        // this.categorias.remove(categoria);
+    public void removeCategoria(Categoria categoria) {
+        if (this.categorias != null && this.categorias.contains(categoria)) {
+            this.categorias.remove(categoria);
+            if (categoria.getProdutos() != null && categoria.getProdutos().contains(this)) {
+                categoria.getProdutos().remove(this);
+            }
+        }
     }
 }
