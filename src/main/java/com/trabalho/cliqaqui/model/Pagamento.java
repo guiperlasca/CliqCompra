@@ -1,20 +1,17 @@
 package com.trabalho.cliqaqui.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Entity
-@Table(name = "pagamentos")
-@Inheritance(strategy = InheritanceType.JOINED) // Estratégia de herança para subclasses
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Pagamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private Double valor;
-
-    private LocalDateTime dataPagamento;
+    private Integer id;
+    private double valor;
+    private Timestamp dataPagamento;
 
     @Enumerated(EnumType.STRING)
     private StatusPagamento status;
@@ -25,28 +22,27 @@ public abstract class Pagamento {
     public Pagamento() {
     }
 
-    // Getters e Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Double getValor() {
+    public double getValor() {
         return valor;
     }
 
-    public void setValor(Double valor) {
+    public void setValor(double valor) {
         this.valor = valor;
     }
 
-    public LocalDateTime getDataPagamento() {
+    public Timestamp getDataPagamento() {
         return dataPagamento;
     }
 
-    public void setDataPagamento(LocalDateTime dataPagamento) {
+    public void setDataPagamento(Timestamp dataPagamento) {
         this.dataPagamento = dataPagamento;
     }
 
@@ -65,4 +61,6 @@ public abstract class Pagamento {
     public void setPedido(Pedido pedido) {
         this.pedido = pedido;
     }
+
+    public abstract boolean processarPagamento();
 }

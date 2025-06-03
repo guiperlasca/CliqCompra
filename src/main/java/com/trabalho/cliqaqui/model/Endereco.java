@@ -1,15 +1,16 @@
 package com.trabalho.cliqaqui.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
-@Table(name = "enderecos")
 public class Endereco {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private Integer id;
     private String rua;
     private String numero;
     private String complemento;
@@ -18,20 +19,14 @@ public class Endereco {
     private String estado;
     private String cep;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    // Construtor padrão
     public Endereco() {
     }
 
-    // Getters e Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -89,13 +84,5 @@ public class Endereco {
 
     public void setCep(String cep) {
         this.cep = cep;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

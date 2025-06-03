@@ -1,33 +1,40 @@
 package com.trabalho.cliqaqui.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
-@Table(name = "pagamentos_boleto")
 public class PagamentoBoleto extends Pagamento {
-
-    private LocalDate dataVencimento;
-    private String codigoBarra;
+    private String codigoBarras;
+    private Date dataVencimento;
 
     public PagamentoBoleto() {
+        super();
     }
 
-    // Getters e Setters
-    public LocalDate getDataVencimento() {
+    public String getCodigoBarras() {
+        return codigoBarras;
+    }
+
+    public void setCodigoBarras(String codigoBarras) {
+        this.codigoBarras = codigoBarras;
+    }
+
+    public Date getDataVencimento() {
         return dataVencimento;
     }
 
-    public void setDataVencimento(LocalDate dataVencimento) {
+    public void setDataVencimento(Date dataVencimento) {
         this.dataVencimento = dataVencimento;
     }
 
-    public String getCodigoBarra() {
-        return codigoBarra;
+    public void emitirBoleto() {
+        // Placeholder
     }
 
-    public void setCodigoBarra(String codigoBarra) {
-        this.codigoBarra = codigoBarra;
+    @Override
+    public boolean processarPagamento() {
+        // Placeholder
+        return false;
     }
 }

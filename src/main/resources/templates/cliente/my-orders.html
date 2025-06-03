@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Meus Pedidos</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <h1>Meu Histórico de Pedidos</h1>
+
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <div th:if="${#lists.isEmpty(pedidos)}">
+            <p>Você ainda não fez nenhum pedido.</p>
+            <p><a th:href="@{/produtos}" class="btn btn-primary">Comece a Comprar</a></p>
+        </div>
+
+        <table th:unless="${#lists.isEmpty(pedidos)}" class="table">
+            <thead>
+                <tr>
+                    <th>ID do Pedido</th>
+                    <th>Data</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Detalhes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="pedido : ${pedidos}">
+                    <td th:text="${pedido.id}">[ID]</td>
+                    <td th:text="${#temporals.format(pedido.dataRealizacao, 'dd-MMM-yyyy HH:mm')}">[Date]</td>
+                    <td th:text="${#numbers.formatCurrency(pedido.valorTotal)}">[Total]</td>
+                    <td th:text="${pedido.status}">[Status]</td>
+                    <td>
+                        <a th:href="@{/checkout/order/{orderId}/confirmation(orderId=${pedido.id})}" class="btn btn-sm btn-info">Ver Detalhes</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</body>
+</html>

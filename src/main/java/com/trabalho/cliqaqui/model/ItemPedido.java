@@ -3,43 +3,33 @@ package com.trabalho.cliqaqui.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "itens_pedido")
 public class ItemPedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "produto_id")
-    private Produto produto; // Renomeado de CliqModel para Produto
-
+    private Integer id;
     private int quantidade;
-    private Double precoUnitarioMomentoCompra;
-    private Double descontoAplicado;
+    private double precoUnitarioMomentoCompra;
+    private double subtotal;
+    private double descontoAplicado;
 
     @ManyToOne
-    @JoinColumn(name = "pedido_id")
+    @JoinColumn(name = "produto_id", nullable = false)
+    private Produto produto;
+
+    @ManyToOne
+    @JoinColumn(name = "pedido_id", nullable = false)
     private Pedido pedido;
 
     public ItemPedido() {
     }
 
-    // Getters e Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Produto getProduto() {
-        return produto;
-    }
-
-    public void setProduto(Produto produto) {
-        this.produto = produto;
     }
 
     public int getQuantidade() {
@@ -50,20 +40,36 @@ public class ItemPedido {
         this.quantidade = quantidade;
     }
 
-    public Double getPrecoUnitarioMomentoCompra() {
+    public double getPrecoUnitarioMomentoCompra() {
         return precoUnitarioMomentoCompra;
     }
 
-    public void setPrecoUnitarioMomentoCompra(Double precoUnitarioMomentoCompra) {
+    public void setPrecoUnitarioMomentoCompra(double precoUnitarioMomentoCompra) {
         this.precoUnitarioMomentoCompra = precoUnitarioMomentoCompra;
     }
 
-    public Double getDescontoAplicado() {
+    public double getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(double subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public double getDescontoAplicado() {
         return descontoAplicado;
     }
 
-    public void setDescontoAplicado(Double descontoAplicado) {
+    public void setDescontoAplicado(double descontoAplicado) {
         this.descontoAplicado = descontoAplicado;
+    }
+
+    public Produto getProduto() {
+        return produto;
+    }
+
+    public void setProduto(Produto produto) {
+        this.produto = produto;
     }
 
     public Pedido getPedido() {

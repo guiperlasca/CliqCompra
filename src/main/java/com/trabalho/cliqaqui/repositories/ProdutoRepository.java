@@ -1,18 +1,13 @@
 package com.trabalho.cliqaqui.repositories;
 
-import com.trabalho.cliqaqui.model.Produto; // Renomeado de CliqModel para Produto
+import com.trabalho.cliqaqui.model.Produto;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.List; // Ensure this import is present
 
-public interface ProdutoRepository extends JpaRepository<Produto, Long> {
-
-    // Método para buscar produtos por nome
-    List<Produto> findByNomeContainingIgnoreCase(String nome);
-
-    // Método para buscar produtos por categoria
-    @Query("SELECT p FROM Produto p JOIN p.categorias c WHERE c.nome = :nomeCategoria")
-    List<Produto> findByCategoriaNome(@Param("nomeCategoria") String nomeCategoria);
+@Repository
+public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
+    List<Produto> findByUsuarioId(Integer usuarioId);
+    // Custom query methods can be added here later if needed
 }

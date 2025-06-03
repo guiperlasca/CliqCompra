@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Produtos</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <h1>Nossos Produtos</h1>
+
+        <div th:if="${#lists.isEmpty(produtos)}">
+            <p>Nenhum produto disponível no momento.</p>
+        </div>
+
+        <table th:unless="${#lists.isEmpty(produtos)}">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Descrição</th>
+                    <th>Ação</th> <!-- New Header -->
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="produto : ${produtos}">
+                    <td th:text="${produto.nome}">Product Name</td>
+                    <td th:text="${#numbers.formatCurrency(produto.preco)}">0.00</td>
+                    <td th:text="${produto.descricao}">Product Description</td>
+                    <td>
+                        <form th:action="@{/cart/add/{id}(id=${produto.id})}" method="post" style="display: inline;">
+                            <input type="number" name="quantity" value="1" min="1" style="width: 50px; margin-right: 5px;" />
+                            <button type="submit">Adicionar ao Carrinho</button>
+                            <!-- The example used btn-sm btn-success, but style.css only has button[type="submit"] -->
+                            <!-- The default button styling will be applied. -->
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- The "Back to Home" link is already in the layout's header -->
+    </section>
+</body>
+</html>
