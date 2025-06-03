@@ -431,7 +431,6 @@ public class WebController {
         if (cliente.getEnderecos() == null) {
             cliente.setEnderecos(new ArrayList<>());
         }
-        endereco.setCliente(cliente); // Set the owning side of the relationship
         cliente.getEnderecos().add(endereco); 
         
         try {

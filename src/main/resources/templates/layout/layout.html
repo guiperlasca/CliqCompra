@@ -13,38 +13,38 @@
             <h1>CliqCompra</h1>
             <nav>
                 <ul>
-                    <li><a th:href="@{/}">Home</a></li>
-                    <li><a th:href="@{/produtos}">Products</a></li>
+                    <li><a th:href="@{/}">Início</a></li>
+                    <li><a th:href="@{/produtos}">Produtos</a></li>
 
                     <!-- If user is NOT logged in -->
                     <li th:if="${!isUserLoggedIn}">
-                        <a th:href="@{/registrar}">Register</a>
+                        <a th:href="@{/registrar}">Registrar</a>
                     </li>
                     <li th:if="${!isUserLoggedIn}">
-                        <a th:href="@{/login}">Login</a>
+                        <a th:href="@{/login}">Entrar</a>
                     </li>
 
                     <!-- If user IS logged in -->
                     <th:block th:if="${isUserLoggedIn}">
                         <li>
                             <span style="color: #fff; margin-right: 15px;">
-                                Welcome, <span th:text="${session.loggedInUserName != null ? session.loggedInUserName : loggedInUserEmail}"></span> (<span th:text="${loggedInUserType}"></span>)
+                                Bem-vindo(a), <span th:text="${session.loggedInUserName != null ? session.loggedInUserName : loggedInUserEmail}"></span> (<span th:text="${loggedInUserType}"></span>)
                             </span>
                         </li>
 
                         <!-- Links for all logged-in users -->
-                        <li><a th:href="@{/produtos/add}">Add Product</a></li>
-                        <li><a th:href="@{/produtos/my}">My Products</a></li>
+                        <li><a th:href="@{/produtos/add}">Adicionar Produto</a></li>
+                        <li><a th:href="@{/produtos/my}">Meus Produtos</a></li>
 
                         <!-- Cliente Specific Links (if they remain distinct) -->
                         <th:block th:if="${loggedInUserType == 'CLIENTE'}">
-                            <li><a th:href="@{/cart}">My Cart</a></li>
-                            <li><a th:href="@{/cliente/pedidos}">My Orders</a></li>
-                            <li><a th:href="@{/cliente/enderecos}">My Addresses</a></li>
+                            <li><a th:href="@{/cart}">Meu Carrinho</a></li>
+                            <li><a th:href="@{/cliente/pedidos}">Meus Pedidos</a></li>
+                            <li><a th:href="@{/cliente/enderecos}">Meus Endereços</a></li>
                         </th:block>
                         
                         <li>
-                            <a th:href="@{/logout}">Logout</a>
+                            <a th:href="@{/logout}">Sair</a>
                         </li>
                     </th:block>
                 </ul>
@@ -55,13 +55,13 @@
     <main class="container">
         <!-- Page-specific content will be inserted here -->
         <section layout:fragment="content">
-            <p>This is placeholder content from the layout file. It should be replaced by page-specific content.</p>
+            <p>Este é um conteúdo provisório do arquivo de layout. Deve ser substituído por conteúdo específico da página.</p>
         </section>
     </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2023 CliqCompra. All rights reserved.</p>
+            <p>&copy; 2023 CliqCompra. Todos os direitos reservados.</p>
         </div>
     </footer>
 </body>
