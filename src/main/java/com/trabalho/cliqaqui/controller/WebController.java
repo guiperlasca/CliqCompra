@@ -127,12 +127,12 @@ public class WebController {
 
             session.setAttribute("loggedInUserType", "CLIENTE");
 
-            redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Welcome, " + novoUsuario.getNome());
+            redirectAttributes.addFlashAttribute("successMessage", "Cadastro realizado com sucesso! Bem-vindo(a), " + novoUsuario.getNome());
             return "redirect:/home"; // Redirect to home page
         } catch (Exception e) {
             // TODO: More specific error handling (e.g., for duplicate email, or other DB constraints)
             // For now, re-render the form with a generic error message
-            model.addAttribute("errorMessage", "Registration failed: " + e.getMessage()); // Provide more specific error
+            model.addAttribute("errorMessage", "Falha no cadastro: " + e.getMessage()); // Provide more specific error
             model.addAttribute("usuarioDto", usuarioDto); // Send the DTO back to repopulate the form
             // Re-populate login status for layout consistency on error page
             String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
@@ -186,13 +186,13 @@ public class WebController {
                 session.setAttribute("loggedInUserType", userType);
                 session.setAttribute("loggedInUserName", usuario.getNome());
 
-                redirectAttributes.addFlashAttribute("successMessage", "Login successful! Welcome " + usuario.getNome());
+                redirectAttributes.addFlashAttribute("successMessage", "Login realizado com sucesso! Bem-vindo(a) " + usuario.getNome());
                 return "redirect:/home";
             }
         }
 
         // Failed login (user not found or password incorrect)
-        redirectAttributes.addFlashAttribute("loginError", "Invalid email or password.");
+        redirectAttributes.addFlashAttribute("loginError", "Email ou senha inválidos.");
         return "redirect:/login";
     }
 
@@ -218,7 +218,7 @@ public class WebController {
     @GetMapping("/logout")
     public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
         session.invalidate();
-        redirectAttributes.addFlashAttribute("logoutMessage", "You have been logged out successfully.");
+        redirectAttributes.addFlashAttribute("logoutMessage", "Você saiu com sucesso.");
         return "redirect:/login";
     }
 
@@ -229,7 +229,7 @@ public class WebController {
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
 
         if (loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to add products.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para adicionar produtos.");
             return "redirect:/login";
         }
 
@@ -256,7 +256,7 @@ public class WebController {
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
 
         if (loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to add products.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para adicionar produtos.");
             return "redirect:/login";
         }
 
@@ -275,7 +275,7 @@ public class WebController {
         // Fetch the Usuario entity
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
         if (!optionalUsuario.isPresent()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Could not find your account details.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Não foi possível encontrar os detalhes da sua conta.");
             // Consider redirecting to a more appropriate page if needed, e.g., "/produtos/add" or "/home"
             return "redirect:/produtos/add";
         }
@@ -311,9 +311,9 @@ public class WebController {
             } catch (IOException e) {
                 // Log the error: e.g., e.printStackTrace();
                 // Optionally, add a specific error message to redirectAttributes or model for photo upload failure
-                model.addAttribute("errorMessage", "Photo upload failed, product saved without photo. Error: " + e.getMessage());
+                model.addAttribute("errorMessage", "Falha no upload da foto, produto salvo sem foto. Erro: " + e.getMessage());
                 // If you want to stop product creation on photo error, uncomment below and comment out the model.addAttribute above
-                // redirectAttributes.addFlashAttribute("errorMessage", "Photo upload failed: " + e.getMessage());
+                // redirectAttributes.addFlashAttribute("errorMessage", "Falha no upload da foto: " + e.getMessage());
                 // return "redirect:/produtos/add"; 
             }
         } else {
@@ -322,11 +322,11 @@ public class WebController {
 
         try {
             produtoService.salvarProduto(produto);
-            redirectAttributes.addFlashAttribute("successMessage", "Product added successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "Produto adicionado com sucesso!");
             return "redirect:/produtos/my";
         } catch (Exception e) {
             // Log the exception e.g. e.printStackTrace();
-            model.addAttribute("errorMessage", "Error adding product. Please try again.");
+            model.addAttribute("errorMessage", "Erro ao adicionar produto. Por favor, tente novamente.");
             model.addAttribute("produtoDto", produtoDto); // Send DTO back
             // Re-populate login status for layout
             String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
@@ -347,7 +347,7 @@ public class WebController {
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
 
         if (loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to view your products.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para ver seus produtos.");
             return "redirect:/login";
         }
 
@@ -374,7 +374,7 @@ public class WebController {
     public String showAddAddressForm(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
         if (loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to add an address.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para adicionar um endereço.");
             return "redirect:/login";
         }
         // Optional: Check if user is Cliente if other user types exist and should not add addresses
@@ -403,7 +403,7 @@ public class WebController {
 
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
         if (loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Session expired or not logged in. Please login again.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Sessão expirada ou não autenticada. Por favor, entre novamente.");
             return "redirect:/login";
         }
 
@@ -421,7 +421,7 @@ public class WebController {
 
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
         if (!optionalUsuario.isPresent() || !(optionalUsuario.get() instanceof Cliente)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Could not find your client account details.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Não foi possível encontrar os detalhes da sua conta de cliente.");
             return "redirect:/home"; // Or a more appropriate error page
         }
         Cliente cliente = (Cliente) optionalUsuario.get();
@@ -435,11 +435,11 @@ public class WebController {
         
         try {
             usuarioService.salvarUsuario(cliente); // Assuming UsuarioService.salvarUsuario() handles cascading saves for Cliente
-            redirectAttributes.addFlashAttribute("successMessage", "Address added successfully!");
+            redirectAttributes.addFlashAttribute("successMessage", "Endereço adicionado com sucesso!");
             return "redirect:/cliente/enderecos"; // Redirect to a page listing addresses
         } catch (Exception e) {
             // Log e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "Error saving address: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao salvar endereço: " + e.getMessage());
             // Optionally, return to form with error and populated fields
             // For now, redirecting to avoid resubmission issues, but state is lost.
             // To return to form:
@@ -459,13 +459,13 @@ public class WebController {
     public String showMyAddressesPage(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
         if (loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to view your addresses.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para ver seus endereços.");
             return "redirect:/login";
         }
 
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
         if (!optionalUsuario.isPresent() || !(optionalUsuario.get() instanceof Cliente)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Could not find your client account details.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Não foi possível encontrar os detalhes da sua conta de cliente.");
             return "redirect:/home"; // Or a more appropriate error page
         }
         Cliente cliente = (Cliente) optionalUsuario.get();
@@ -500,13 +500,13 @@ public class WebController {
             Produto produto = optionalProduto.get();
             try {
                 shoppingCartService.addItem(produto, quantity);
-                redirectAttributes.addFlashAttribute("successMessage", produto.getNome() + " added to cart!");
+                redirectAttributes.addFlashAttribute("successMessage", produto.getNome() + " adicionado ao carrinho!");
             } catch (Exception e) { // Catch any potential exceptions from cart service
                 // Log e.printStackTrace();
-                redirectAttributes.addFlashAttribute("errorMessage", "Error adding product to cart. Please try again.");
+                redirectAttributes.addFlashAttribute("errorMessage", "Erro ao adicionar produto ao carrinho. Por favor, tente novamente.");
             }
         } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "Product not found!");
+            redirectAttributes.addFlashAttribute("errorMessage", "Produto não encontrado!");
         }
 
         // Redirect back to the products page, or ideally the referer.
@@ -537,10 +537,10 @@ public class WebController {
                                RedirectAttributes redirectAttributes) {
         try {
             shoppingCartService.updateItemQuantity(productId, quantity);
-            redirectAttributes.addFlashAttribute("successMessage", "Cart updated successfully.");
+            redirectAttributes.addFlashAttribute("successMessage", "Carrinho atualizado com sucesso.");
         } catch (Exception e) {
             // Log e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "Error updating cart. Please try again.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao atualizar carrinho. Por favor, tente novamente.");
         }
         return "redirect:/cart";
     }
@@ -550,10 +550,10 @@ public class WebController {
                                RedirectAttributes redirectAttributes) {
         try {
             shoppingCartService.removeItem(productId);
-            redirectAttributes.addFlashAttribute("successMessage", "Item removed from cart.");
+            redirectAttributes.addFlashAttribute("successMessage", "Item removido do carrinho.");
         } catch (Exception e) {
             // Log e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "Error removing item from cart. Please try again.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao remover item do carrinho. Por favor, tente novamente.");
         }
         return "redirect:/cart";
     }
@@ -564,11 +564,11 @@ public class WebController {
         String userType = (String) session.getAttribute("loggedInUserType");
 
         if (loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to proceed to checkout.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para prosseguir para o checkout.");
             return "redirect:/login";
         }
         if (!"CLIENTE".equals(userType)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Only Clientes can proceed to checkout.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Apenas Clientes podem prosseguir para o checkout.");
             // Or redirect to home if they are some other logged-in type
             return "redirect:/cart"; 
         }
@@ -576,13 +576,13 @@ public class WebController {
         // Check if cart is empty
         ShoppingCartDTO cart = shoppingCartService.getCart(); // Assuming shoppingCartService is injected
         if (cart == null || cart.getItems().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Your cart is empty. Please add items to your cart first.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Seu carrinho está vazio. Adicione itens ao carrinho primeiro.");
             return "redirect:/cart";
         }
 
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
         if (!optionalUsuario.isPresent() || !(optionalUsuario.get() instanceof Cliente)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Could not find your client account details.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Não foi possível encontrar os detalhes da sua conta de cliente.");
             return "redirect:/home";
         }
         Cliente cliente = (Cliente) optionalUsuario.get();
@@ -603,7 +603,7 @@ public class WebController {
                                             RedirectAttributes redirectAttributes) {
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
         if (loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Session expired. Please login again.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Sessão expirada ou não autenticada. Por favor, entre novamente.");
             return "redirect:/login";
         }
 
@@ -625,7 +625,7 @@ public class WebController {
 
 
         if (selectedEnderecoId == null) {
-             redirectAttributes.addFlashAttribute("errorMessage", "Please select a shipping address.");
+             redirectAttributes.addFlashAttribute("errorMessage", "Por favor, selecione um endereço de entrega.");
              return "redirect:/checkout/address-select";
         }
         
@@ -639,29 +639,29 @@ public class WebController {
         String userType = (String) session.getAttribute("loggedInUserType");
 
         if (loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to confirm your order.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para confirmar seu pedido.");
             return "redirect:/login";
         }
         if (!"CLIENTE".equals(userType)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Only Clientes can confirm orders.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Apenas Clientes podem confirmar pedidos.");
             return "redirect:/cart"; 
         }
 
         ShoppingCartDTO cart = shoppingCartService.getCart();
         if (cart == null || cart.getItems().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Your cart is empty.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Seu carrinho está vazio.");
             return "redirect:/cart";
         }
 
         Integer selectedEnderecoId = (Integer) session.getAttribute("selectedEnderecoId");
         if (selectedEnderecoId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "No shipping address selected. Please select an address.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Nenhum endereço de entrega selecionado. Por favor, selecione um endereço.");
             return "redirect:/checkout/address-select";
         }
 
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
         if (!optionalUsuario.isPresent() || !(optionalUsuario.get() instanceof Cliente)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Could not find your client account details.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Não foi possível encontrar os detalhes da sua conta de cliente.");
             return "redirect:/login"; 
         }
         Cliente cliente = (Cliente) optionalUsuario.get();
@@ -671,7 +671,7 @@ public class WebController {
                 .findFirst();
 
         if (!selectedEnderecoOpt.isPresent()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Selected address not found. Please select again.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Endereço selecionado não encontrado. Por favor, selecione novamente.");
             session.removeAttribute("selectedEnderecoId"); // Clear invalid ID
             return "redirect:/checkout/address-select";
         }
@@ -696,25 +696,25 @@ public class WebController {
         String userType = (String) session.getAttribute("loggedInUserType");
 
         if (loggedInUserId == null || !"CLIENTE".equals(userType)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in as a Cliente to place an order.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado como Cliente para fazer um pedido.");
             return "redirect:/login";
         }
 
         ShoppingCartDTO cart = shoppingCartService.getCart();
         if (cart == null || cart.getItems().isEmpty()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Your cart is empty. Cannot place order.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Seu carrinho está vazio. Não é possível fazer o pedido.");
             return "redirect:/cart";
         }
 
         Integer selectedEnderecoId = (Integer) session.getAttribute("selectedEnderecoId");
         if (selectedEnderecoId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Address not selected or session expired. Please select an address.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Endereço não selecionado ou sessão expirada. Por favor, selecione um endereço.");
             return "redirect:/checkout/address-select";
         }
 
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
         if (!optionalUsuario.isPresent() || !(optionalUsuario.get() instanceof Cliente)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Could not find Cliente account details.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Não foi possível encontrar os detalhes da conta do Cliente.");
             return "redirect:/login"; // Should not happen if session is consistent
         }
         Cliente cliente = (Cliente) optionalUsuario.get();
@@ -724,7 +724,7 @@ public class WebController {
             .findFirst();
 
         if (!selectedEnderecoOpt.isPresent()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Invalid shipping address selected. Please select again.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Endereço de entrega inválido selecionado. Por favor, selecione novamente.");
             return "redirect:/checkout/address-select";
         }
         Endereco enderecoEntrega = selectedEnderecoOpt.get();
@@ -740,7 +740,7 @@ public class WebController {
         for (CartItemDTO cartItemDto : cart.getItems()) {
             Optional<Produto> optionalProduto = produtoService.buscarProdutoPorId(cartItemDto.getProductId());
             if (!optionalProduto.isPresent()) {
-                redirectAttributes.addFlashAttribute("errorMessage", "A product in your cart is no longer available. Order cannot be placed.");
+                redirectAttributes.addFlashAttribute("errorMessage", "Um produto em seu carrinho não está mais disponível. O pedido não pode ser feito.");
                 return "redirect:/cart";
             }
             Produto produto = optionalProduto.get();
@@ -760,12 +760,12 @@ public class WebController {
             Pedido pedidoSalvo = pedidoService.criarPedido(novoPedido); 
             shoppingCartService.clearCart();
             session.removeAttribute("selectedEnderecoId"); // Clear selected address from session
-            redirectAttributes.addFlashAttribute("successMessage", "Order placed successfully! Your Order ID is: " + pedidoSalvo.getId());
+            redirectAttributes.addFlashAttribute("successMessage", "Pedido realizado com sucesso! O ID do seu pedido é: " + pedidoSalvo.getId());
             // TODO: Create this confirmation page in a later step
             return "redirect:/checkout/order/" + pedidoSalvo.getId() + "/confirmation"; 
         } catch (Exception e) {
             // Log e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "Error placing order. Please try again. " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Erro ao fazer o pedido. Por favor, tente novamente. " + e.getMessage());
             return "redirect:/cart"; // Or /checkout/address-select
         }
     }
@@ -783,7 +783,7 @@ public class WebController {
 
         Optional<Pedido> optionalPedido = pedidoService.buscarPedidoPorId(orderId);
         if (!optionalPedido.isPresent()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Order not found.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Pedido não encontrado.");
             return "redirect:/"; // Or to an error page or order history
         }
         
@@ -820,7 +820,7 @@ public class WebController {
         Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
 
         if (!"CLIENTE".equals(userType) || loggedInUserId == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in as a Cliente to view your orders.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado como Cliente para ver seus pedidos.");
             return "redirect:/login";
         }
 

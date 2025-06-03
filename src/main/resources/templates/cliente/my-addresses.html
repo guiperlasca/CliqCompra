@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 <head>
-    <title>My Addresses</title>
+    <title>Meus Endereços</title>
     <style>
         .address-list { list-style-type: none; padding: 0; }
         .address-list li { border: 1px solid #ddd; margin-bottom: 10px; padding: 10px; border-radius: 5px; }
@@ -11,23 +11,23 @@
 </head>
 <body>
     <section layout:fragment="content">
-        <h1>My Addresses</h1>
+        <h1>Meus Endereços</h1>
 
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
         <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
-        <p><a th:href="@{/cliente/enderecos/add}" class="btn btn-primary" style="margin-bottom: 15px;">Add New Address</a></p>
+        <p><a th:href="@{/cliente/enderecos/add}" class="btn btn-primary" style="margin-bottom: 15px;">Adicionar Novo Endereço</a></p>
 
         <div th:if="${enderecos == null or #lists.isEmpty(enderecos.?[id != null])}">
-            <p>You have no saved addresses.</p>
+            <p>Você não possui endereços salvos.</p>
         </div>
 
         <ul class="address-list" th:if="${enderecos != null and not #lists.isEmpty(enderecos.?[id != null])}">
             <li th:each="addr : ${enderecos.?[id != null]}"> <!-- Filter out potential unsaved Endereco from form binding if error -->
                 <strong th:text="${addr.rua} + ', ' + ${addr.numero}">Street, Number</strong><br/>
-                <span th:if="${addr.complemento != null and not #strings.isEmpty(addr.complemento)}" th:text="'Complement: ' + ${addr.complemento}"></span><span th:if="${addr.complemento != null and not #strings.isEmpty(addr.complemento)}"><br/></span>
-                <span th:text="'Neighborhood: ' + ${addr.bairro}">Neighborhood</span><br/>
-                <span th:text="'City: ' + ${addr.cidade} + ' - ' + ${addr.estado}">City - State</span><br/>
+                <span th:if="${addr.complemento != null and not #strings.isEmpty(addr.complemento)}" th:text="'Complemento: ' + ${addr.complemento}"></span><span th:if="${addr.complemento != null and not #strings.isEmpty(addr.complemento)}"><br/></span>
+                <span th:text="'Bairro: ' + ${addr.bairro}">Neighborhood</span><br/>
+                <span th:text="'Cidade: ' + ${addr.cidade} + ' - ' + ${addr.estado}">City - State</span><br/>
                 <span th:text="'CEP: ' + ${addr.cep}">CEP</span>
                 <!-- TODO: Add Edit/Delete links here later -->
             </li>
