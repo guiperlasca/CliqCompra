@@ -4,7 +4,6 @@
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Inspiração e Objetivo Final](#inspiração-e-objetivo-final)
 - [Funcionalidades Atuais](#funcionalidades-atuais)
-- [Visão de Futuro (Rumo a ser como OLX)](#visão-de-futuro-rumo-a-ser-como-olx)
 - [Modelo de Dados (UML)](#modelo-de-dados-uml)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 - [Como Executar](#como-executar)
@@ -42,19 +41,6 @@ Atualmente, o projeto implementa as seguintes funcionalidades:
     * Página de confirmação/detalhamento do pedido acessível após a compra ou pelo histórico.
 * **API REST:**
     * Endpoints básicos foram criados para `Pedidos`, `Produtos` e `Usuários`, permitindo interações via HTTP.
-
-## Visão de Futuro (Rumo a ser como OLX)
-Para alcançar o objetivo de ser uma plataforma de intermediação de vendas completa e versátil como a OLX, os próximos passos e funcionalidades planejadas incluem:
-* **Perfis Detalhados para Vendedores:** Implementar funcionalidades específicas para `Vendedores`, como um painel de controle para gerenciar anúncios, vendas, visualizar estatísticas e gerenciar o perfil público.
-* **Comunicação Direta (Chat):** Desenvolver um sistema de mensagens ou chat em tempo real para que compradores e vendedores possam negociar e tirar dúvidas diretamente na plataforma.
-* **Busca Avançada e Filtros:** Criar mecanismos de busca mais sofisticados, com filtros por categoria, faixa de preço, localização do vendedor, condição do produto (novo/usado), entre outros.
-* **Sistema de Avaliações e Reputação:** Permitir que usuários avaliem produtos, vendedores e compradores, construindo um sistema de reputação que aumente a confiança nas transações.
-* **Integração com Pagamentos Seguros:** Integrar com gateways de pagamento online para processar transações financeiras de forma segura diretamente na plataforma, oferecendo opções como cartão de crédito, boleto, Pix, etc.
-* **Categorização Flexível e Detalhada:** Melhorar e expandir o sistema de categorização de produtos para abranger uma maior variedade de itens e facilitar a navegação.
-* **Painel Administrativo:** Uma interface para administradores da plataforma gerenciarem usuários, anúncios, categorias, resolver disputas e monitorar a atividade do site.
-* **Notificações em Tempo Real:** Implementar um sistema de notificações para alertar usuários sobre novas mensagens, ofertas, status de pedidos, novos anúncios de interesse, etc.
-* **Geolocalização para Anúncios:** Permitir que anúncios sejam associados a uma localização e que usuários possam buscar produtos próximos.
-* **Múltiplos Tipos de Anúncio:** Considerar a possibilidade de diferentes tipos de listagens, como serviços, aluguéis, além de produtos físicos.
 
 ## Modelo de Dados (UML)
 A estrutura do modelo de dados do sistema está representada no diagrama UML abaixo, que foi concebido para suportar as funcionalidades atuais e futuras da plataforma:
