@@ -1,41 +1,57 @@
 package com.trabalho.cliqaqui.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "pagamentos_cartao")
 public class PagamentoCartao extends Pagamento {
-
-    private String numeroCartao; // Considerar criptografia ou mascaramento
-    private String bandeira;
-    private Integer numeroParcelas;
+    private String numeroCartaoToken;
+    private String nomeTitular;
+    private String dataValidade;
+    private int numeroParcelas;
 
     public PagamentoCartao() {
+        super();
     }
 
-    // Getters e Setters
-    public String getNumeroCartao() {
-        return numeroCartao;
+    public String getNumeroCartaoToken() {
+        return numeroCartaoToken;
     }
 
-    public void setNumeroCartao(String numeroCartao) {
-        this.numeroCartao = numeroCartao;
+    public void setNumeroCartaoToken(String numeroCartaoToken) {
+        this.numeroCartaoToken = numeroCartaoToken;
     }
 
-    public String getBandeira() {
-        return bandeira;
+    public String getNomeTitular() {
+        return nomeTitular;
     }
 
-    public void setBandeira(String bandeira) {
-        this.bandeira = bandeira;
+    public void setNomeTitular(String nomeTitular) {
+        this.nomeTitular = nomeTitular;
     }
 
-    public Integer getNumeroParcelas() {
+    public String getDataValidade() {
+        return dataValidade;
+    }
+
+    public void setDataValidade(String dataValidade) {
+        this.dataValidade = dataValidade;
+    }
+
+    public int getNumeroParcelas() {
         return numeroParcelas;
     }
 
-    public void setNumeroParcelas(Integer numeroParcelas) {
+    public void setNumeroParcelas(int numeroParcelas) {
         this.numeroParcelas = numeroParcelas;
+    }
+
+    public void registrarPagamentoCartao() {
+        // Placeholder
+    }
+
+    @Override
+    public boolean processarPagamento() {
+        // Placeholder
+        return false;
     }
 }

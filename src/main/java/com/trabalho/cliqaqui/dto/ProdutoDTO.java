@@ -1,45 +1,32 @@
 package com.trabalho.cliqaqui.dto;
 
-import com.trabalho.cliqaqui.model.Produto;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.multipart.MultipartFile;
 
 public class ProdutoDTO {
-    private Long id;
     private String nome;
+    private double preco;
     private String descricao;
-    private Double preco;
-    private List<Long> categoriasIds; // Para receber IDs de categorias no cadastro/edição
-    private List<String> categoriasNomes; // Para retornar nomes das categorias
+    private MultipartFile fotoFile;
+    // Categories can be added later if needed.
 
     public ProdutoDTO() {
     }
 
-    public ProdutoDTO(Produto produto) {
-        this.id = produto.getId();
-        this.nome = produto.getNome();
-        this.descricao = produto.getDescricao();
-        this.preco = produto.getPreco();
-        this.categoriasNomes = produto.getCategorias().stream()
-                .map(categoria -> categoria.getNome())
-                .collect(Collectors.toList());
-    }
-
-    // Getters e Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    // Getters and Setters for all fields
     public String getNome() {
         return nome;
     }
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public double getPreco() {
+        return preco;
+    }
+
+    public void setPreco(double preco) {
+        this.preco = preco;
     }
 
     public String getDescricao() {
@@ -50,27 +37,11 @@ public class ProdutoDTO {
         this.descricao = descricao;
     }
 
-    public Double getPreco() {
-        return preco;
+    public MultipartFile getFotoFile() {
+        return fotoFile;
     }
 
-    public void setPreco(Double preco) {
-        this.preco = preco;
-    }
-
-    public List<Long> getCategoriasIds() {
-        return categoriasIds;
-    }
-
-    public void setCategoriasIds(List<Long> categoriasIds) {
-        this.categoriasIds = categoriasIds;
-    }
-
-    public List<String> getCategoriasNomes() {
-        return categoriasNomes;
-    }
-
-    public void setCategoriasNomes(List<String> categoriasNomes) {
-        this.categoriasNomes = categoriasNomes;
+    public void setFotoFile(MultipartFile fotoFile) {
+        this.fotoFile = fotoFile;
     }
 }

@@ -1,6 +1,5 @@
 package com.trabalho.cliqaqui.controller;
 
-import com.trabalho.cliqaqui.dto.PedidoDTO;
 import com.trabalho.cliqaqui.model.Pedido;
 import com.trabalho.cliqaqui.service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,21 +10,39 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pedidos")
+@RequestMapping("/api/pedidos")
 public class PedidoController {
 
-    @Autowired
-    private PedidoService pedidoService;
+    private final PedidoService pedidoService;
 
-    @PostMapping // Finaliza o pedido [cite: 62]
-    public ResponseEntity<Pedido> realizarPedido(@RequestBody PedidoDTO pedidoDTO) {
-        Pedido novoPedido = pedidoService.processarPedido(pedidoDTO);
-        return new ResponseEntity<>(novoPedido, HttpStatus.CREATED);
+    @Autowired
+    public PedidoController(PedidoService pedidoService) {
+        this.pedidoService = pedidoService;
     }
 
-    @GetMapping("/cliente/{userId}") // Permite ao cliente e vendedor visualizar seus pedidos [cite: 33]
-    public ResponseEntity<List<Pedido>> getPedidosByCliente(@PathVariable Long userId) {
-        List<Pedido> pedidos = pedidoService.getPedidosByUserId(userId);
+    @PostMapping
+    public ResponseEntity<Pedido> criarPedido(@RequestBody Pedido pedido) {
+        // Simplified: In a real scenario, this would involve more complex logic
+        // e.g., setting the authenticated user as the cliente, validating products, etc.
+        Pedido novoPedido = pedidoService.criarPedido(pedido);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoPedido);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Pedido> buscarPedidoPorId(@PathVariable Integer id) {
+        return pedidoService.buscarPedidoPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/cliente/{clienteId}")
+    public ResponseEntity<List<Pedido>> listarPedidosPorCliente(@PathVariable Integer clienteId) {
+        List<Pedido> pedidos = pedidoService.listarPedidosPorCliente(clienteId);
+        if (pedidos.isEmpty()) {
+            // You might return notFound if the client doesn't exist or has no orders,
+            // or ok with an empty list depending on desired behavior.
+            return ResponseEntity.ok(pedidos); // Returning OK with empty list for now
+        }
         return ResponseEntity.ok(pedidos);
     }
 }

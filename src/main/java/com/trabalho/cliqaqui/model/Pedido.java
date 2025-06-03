@@ -1,64 +1,55 @@
 package com.trabalho.cliqaqui.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "pedidos")
 public class Pedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    private LocalDateTime dataRealizacao;
+    private Timestamp dataRealizacao;
 
     @Enumerated(EnumType.STRING)
     private StatusPedido status;
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_id")
-    private User cliente;
-
-    @ManyToOne
-    @JoinColumn(name = "endereco_entrega_id")
-    private Endereco enderecoEntrega;
+    private double valorTotal;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemPedido> itens = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
+
+    @ManyToOne
+    @JoinColumn(name = "endereco_entrega_id", nullable = false)
+    private Endereco enderecoEntrega;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pagamento_id", referencedColumnName = "id")
     private Pagamento pagamento;
 
-    private Double valorTotal;
-
     public Pedido() {
     }
 
-    // Método para calcular o valor total do pedido
-    public void calcularTotal() {
-        this.valorTotal = itens.stream()
-                .mapToDouble(item -> (item.getPrecoUnitarioMomentoCompra() - item.getDescontoAplicado()) * item.getQuantidade())
-                .sum();
-    }
-
-    // Getters e Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public LocalDateTime getDataRealizacao() {
+    public Timestamp getDataRealizacao() {
         return dataRealizacao;
     }
 
-    public void setDataRealizacao(LocalDateTime dataRealizacao) {
+    public void setDataRealizacao(Timestamp dataRealizacao) {
         this.dataRealizacao = dataRealizacao;
     }
 
@@ -70,11 +61,27 @@ public class Pedido {
         this.status = status;
     }
 
-    public User getCliente() {
+    public double getValorTotal() {
+        return valorTotal;
+    }
+
+    public void setValorTotal(double valorTotal) {
+        this.valorTotal = valorTotal;
+    }
+
+    public List<ItemPedido> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemPedido> itens) {
+        this.itens = itens;
+    }
+
+    public Cliente getCliente() {
         return cliente;
     }
 
-    public void setCliente(User cliente) {
+    public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
 
@@ -86,14 +93,6 @@ public class Pedido {
         this.enderecoEntrega = enderecoEntrega;
     }
 
-    public List<ItemPedido> getItens() {
-        return itens;
-    }
-
-    public void setItens(List<ItemPedido> itens) {
-        this.itens = itens;
-    }
-
     public Pagamento getPagamento() {
         return pagamento;
     }
@@ -102,11 +101,28 @@ public class Pedido {
         this.pagamento = pagamento;
     }
 
-    public Double getValorTotal() {
-        return valorTotal;
+    public void adicionarItem(Produto produto, int quantidade) {
+        // Placeholder
     }
 
-    public void setValorTotal(Double valorTotal) {
-        this.valorTotal = valorTotal;
+    public void removerItem(Produto produto) {
+        // Placeholder
+    }
+
+    public double calcularTotal() {
+        // Placeholder
+        return 0.0;
+    }
+
+    public void finalizarPedido() {
+        // Placeholder
+    }
+
+    public void atualizarStatus(StatusPedido novoStatus) {
+        // Placeholder
+    }
+
+    public void selecionarFormaPagamento(Pagamento pagamento) {
+        // Placeholder
     }
 }

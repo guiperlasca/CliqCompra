@@ -1,12 +1,14 @@
 package com.trabalho.cliqaqui.repositories;
 
 import com.trabalho.cliqaqui.model.Pedido;
-import com.trabalho.cliqaqui.model.User; // Importe a classe User
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List; // Importe List
+import java.util.List; // Ensure this import is present
+// import com.trabalho.cliqaqui.model.Pedido; // Ensure this import is present
 
-public interface PedidoRepository extends JpaRepository<Pedido, Long> {
-    // Adicione este método para buscar pedidos por cliente
-    List<Pedido> findByCliente(User cliente);
+@Repository
+public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
+    List<Pedido> findByClienteIdOrderByDataRealizacaoDesc(Integer clienteId);
+    // Custom query methods can be added here later if needed
 }
