@@ -12,7 +12,7 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
 
     Optional<Categoria> findByNomeIgnoreCase(String nome);
 
-    List<Categoria> findAllByOrderByNameAsc();
+    List<Categoria> findAllByOrderByNomeAsc();
 
     // For Phase 2, Step 7 (processAddProduct), if needing to fetch multiple categories by ID:
     // List<Categoria> findAllByIdIn(List<Integer> ids);
