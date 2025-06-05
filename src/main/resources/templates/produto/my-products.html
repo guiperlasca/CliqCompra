@@ -30,7 +30,7 @@
                     <th>Preço</th>
                     <th>Descrição</th>
                     <th>Foto</th>
-                    <!-- TODO: Add column for Actions (Edit/Delete) later -->
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,7 +42,15 @@
                         <img th:if="${produto.fotoUrl != null and not #strings.isEmpty(produto.fotoUrl)}" th:src="@{${produto.fotoUrl}}" alt="Imagem do Produto" style="width:100px; height:auto;" />
                         <span th:if="${produto.fotoUrl == null or #strings.isEmpty(produto.fotoUrl)}">Sem Imagem</span>
                     </td>
-                    <!-- TODO: Add actions links/buttons here later -->
+                    <td>
+                        <form th:action="@{/produtos/delete/{id}(id=${produto.id})}" method="post" style="display:inline; margin-right: 5px;">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Tem certeza que deseja excluir este produto?');">
+                                Excluir
+                            </button>
+                        </form>
+                        <a th:href="@{/produtos/edit/{id}(id=${produto.id})}" class="btn btn-warning btn-sm">Editar</a>
+                    </td>
                 </tr>
             </tbody>
         </table>
