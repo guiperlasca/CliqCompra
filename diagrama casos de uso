@@ -45,7 +45,8 @@ Guest --> UC_Login
 
 ' Authenticated User common actions (implicitly via inheritance)
 UsuarioAutenticado --> UC_Login
-UsuarioAutenticado --> UC_ViewProducts ' Authenticated users can also view products
+UsuarioAutenticado --> UC_ViewProducts
+' Authenticated users can also view products
 
 ' Cliente relationships
 Cliente --> UC_ManageCart
