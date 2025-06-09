@@ -19,7 +19,8 @@ package "Casos de Uso do Convidado" {
 
 package "Casos de Uso do Cliente" {
   usecase "Gerenciar Carrinho de Compras" as UC_GerenciarCarrinho
-  usecase "Finalizar Compra" as UC_FinalizarCompra ' Changed from "Processo de Checkout" for better PT
+  usecase "Finalizar Compra" as UC_FinalizarCompra
+  ' Changed from "Processo de Checkout" for better PT
   usecase "Visualizar Histórico de Pedidos" as UC_VisualizarHistoricoPedidos
   usecase "Gerenciar Endereços" as UC_GerenciarEnderecos
   usecase "Gerenciar Perfil" as UC_GerenciarPerfil_Cliente
