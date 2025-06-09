@@ -8,7 +8,8 @@ actor UsuarioAutenticado #LightGray
 
 UsuarioAutenticado <|-- Cliente
 UsuarioAutenticado <|-- Vendedor
-UsuarioAutenticado <|-- Administrador ' Assuming Admin is also an authenticated user
+UsuarioAutenticado <|-- Administrador
+' Assuming Admin is also an authenticated user
 
 package "Guest Use Cases" {
   usecase "View Products" as UC_ViewProducts
