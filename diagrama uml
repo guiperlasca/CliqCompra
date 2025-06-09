@@ -1,0 +1,143 @@
+@startuml
+
+class Usuario {
+  +id: int
+  +nome: String
+  +email: String
+  +senha: String
+  +login(): void
+  +logout(): void
+}
+
+class Cliente {
+  +cpf: String
+  +telefone: String
+  +addEndereco(Endereco): void
+  +realizarPedido(Pedido): void
+}
+
+class Vendedor {
+  +cnpj: String
+  +nomeFantasia: String
+  +addProduct(Produto): void
+  +viewPedidos(): List<Pedido>
+}
+
+class Carrinho {
+  +id: int
+  +dataCriacao: Date
+  +addItem(ItemCarrinho): void
+  +removeItem(ItemCarrinho): void
+  +calcularTotal(): double
+}
+
+class ItemCarrinho {
+  +id: int
+  +quantidade: int
+  +precoUnitario: double
+  +calcularSubtotal(): double
+}
+
+class Produto {
+  +id: int
+  +nome: String
+  +descricao: String
+  +preco: double
+  +estoque: int
+  +updateEstoque(int): void
+}
+
+class Categoria {
+  +id: int
+  +nome: String
+  +getProdutos(): List<Produto>
+}
+
+class Pedido {
+  +id: int
+  +dataPedido: Date
+  +valorTotal: double
+  +status: StatusPedido
+  +updateStatus(StatusPedido): void
+  +calcularTotal(): double
+}
+
+class ItemPedido {
+  +id: int
+  +quantidade: int
+  +precoUnitario: double
+  +calcularSubtotal(): double
+}
+
+class Endereco {
+  +id: int
+  +logradouro: String
+  +numero: String
+  +complemento: String
+  +bairro: String
+  +cidade: String
+  +estado: String
+  +cep: String
+}
+
+class Pagamento {
+  +id: int
+  +valor: double
+  +dataPagamento: Date
+  +status: StatusPagamento
+  +realizarPagamento(): boolean
+  +reembolsar(): boolean
+}
+
+class PagamentoBoleto {
+  +codigoBarras: String
+  +dataVencimento: Date
+  +gerarBoleto(): void
+}
+
+class PagamentoCartao {
+  +numeroCartao: String
+  +nomeTitular: String
+  +dataValidade: String
+  +cvv: String
+  +processarPagamento(): boolean
+}
+
+enum StatusPagamento {
+  PENDENTE
+  APROVADO
+  REPROVADO
+  REEMBOLSADO
+}
+
+enum StatusPedido {
+  AGUARDANDO_PAGAMENTO
+  EM_PROCESSAMENTO
+  ENVIADO
+  ENTREGUE
+  CANCELADO
+}
+
+' Relationships
+Usuario <|-- Cliente
+Usuario <|-- Vendedor
+
+Pagamento <|-- PagamentoBoleto
+Pagamento <|-- PagamentoCartao
+
+Usuario "1" -- "1" Carrinho : possui
+Usuario "1" -- "0..*" Produto : cadastra/visualiza
+Cliente "1" -- "1..*" Endereco : possui
+Cliente "1" -- "0..*" Pedido : realiza
+Pedido "1" -- "1..*" ItemPedido : contem
+Pedido "1" -- "1" Endereco : entrega em
+Pedido "1" -- "1" Pagamento : tem
+Carrinho "1" -- "0..*" ItemCarrinho : contem
+ItemCarrinho "1" -- "1" Produto : refere-se a
+ItemPedido "1" -- "1" Produto : refere-se a
+Produto "0..*" -- "0..*" Categoria : pertence a
+
+Pedido ..> StatusPedido
+Pagamento ..> StatusPagamento
+
+@enduml
