@@ -1,0 +1,76 @@
+@startuml
+
+actor Guest
+actor Cliente
+actor Vendedor
+actor Administrador
+actor UsuarioAutenticado #LightGray
+
+UsuarioAutenticado <|-- Cliente
+UsuarioAutenticado <|-- Vendedor
+UsuarioAutenticado <|-- Administrador ' Assuming Admin is also an authenticated user
+
+package "Guest Use Cases" {
+  usecase "View Products" as UC_ViewProducts
+  usecase "Register Account" as UC_RegisterAccount
+  usecase "Login" as UC_Login
+}
+
+package "Cliente Use Cases" {
+  usecase "Manage Shopping Cart" as UC_ManageCart
+  usecase "Checkout Process" as UC_Checkout
+  usecase "View Order History" as UC_ViewOrderHistory
+  usecase "Manage Addresses" as UC_ManageAddresses
+  usecase "Manage Profile" as UC_ManageProfile_Cliente
+}
+
+package "Vendedor Use Cases" {
+  usecase "Manage Products" as UC_ManageProducts_Vendedor
+  note right of UC_ManageProducts_Vendedor : Add, View Own, Delete
+  usecase "Manage Profile" as UC_ManageProfile_Vendedor
+}
+
+package "Administrador Use Cases" {
+  usecase "Manage Users (CRUD)" as UC_ManageUsers
+  usecase "Manage All Products (CRUD)" as UC_ManageAllProducts
+  usecase "Manage Orders (CRUD)" as UC_ManageOrders
+  usecase "Manage Profile" as UC_ManageProfile_Admin
+}
+
+' Guest relationships
+Guest --> UC_ViewProducts
+Guest --> UC_RegisterAccount
+Guest --> UC_Login
+
+' Authenticated User common actions (implicitly via inheritance)
+UsuarioAutenticado --> UC_Login
+UsuarioAutenticado --> UC_ViewProducts ' Authenticated users can also view products
+
+' Cliente relationships
+Cliente --> UC_ManageCart
+Cliente --> UC_Checkout
+Cliente --> UC_ViewOrderHistory
+Cliente --> UC_ManageAddresses
+Cliente --> UC_ManageProfile_Cliente
+
+' Vendedor relationships
+Vendedor --> UC_ManageProducts_Vendedor
+Vendedor --> UC_ManageProfile_Vendedor
+
+' Administrador relationships
+Administrador --> UC_ManageUsers
+Administrador --> UC_ManageAllProducts
+Administrador --> UC_ManageOrders
+Administrador --> UC_ManageProfile_Admin
+
+
+' Generalization of Manage Profile if it's a common use case for all authenticated users
+' If Manage Profile is distinct for each, the separate ones are fine.
+' For a shared "Manage Profile" that all authenticated users can do:
+' UsuarioAutenticado --> UC_ManageOwnProfile
+' UC_ManageProfile_Cliente -|> UC_ManageOwnProfile
+' UC_ManageProfile_Vendedor -|> UC_ManageOwnProfile
+' UC_ManageProfile_Admin -|> UC_ManageOwnProfile
+' For this iteration, keeping them separate as initially described.
+
+@enduml
