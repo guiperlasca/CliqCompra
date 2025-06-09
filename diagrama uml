@@ -5,52 +5,52 @@ class Usuario {
   +nome: String
   +email: String
   +senha: String
-  +login(): void
-  +logout(): void
+  +fazerLogin(): void
+  +fazerLogout(): void
 }
 
 class Cliente {
   +cpf: String
   +telefone: String
-  +addEndereco(Endereco): void
+  +adicionarEndereco(Endereco): void
   +realizarPedido(Pedido): void
 }
 
 class Vendedor {
   +cnpj: String
   +nomeFantasia: String
-  +addProduct(Produto): void
-  +viewPedidos(): List<Pedido>
+  +adicionarProduto(Produto): void
+  +visualizarPedidos(): List<Pedido>
 }
 
 class Carrinho {
   +id: int
-  +dataCriacao: Date
-  +addItem(ItemCarrinho): void
-  +removeItem(ItemCarrinho): void
+  +dataCriação: Date
+  +adicionarItem(ItemCarrinho): void
+  +removerItem(ItemCarrinho): void
   +calcularTotal(): double
 }
 
 class ItemCarrinho {
   +id: int
   +quantidade: int
-  +precoUnitario: double
+  +preçoUnitário: double
   +calcularSubtotal(): double
 }
 
 class Produto {
   +id: int
   +nome: String
-  +descricao: String
-  +preco: double
+  +descrição: String
+  +preço: double
   +estoque: int
-  +updateEstoque(int): void
+  +atualizarEstoque(int): void
 }
 
 class Categoria {
   +id: int
   +nome: String
-  +getProdutos(): List<Produto>
+  +obterProdutos(): List<Produto>
 }
 
 class Pedido {
@@ -58,18 +58,18 @@ class Pedido {
   +dataPedido: Date
   +valorTotal: double
   +status: StatusPedido
-  +updateStatus(StatusPedido): void
+  +atualizarStatus(StatusPedido): void
   +calcularTotal(): double
 }
 
 class ItemPedido {
   +id: int
   +quantidade: int
-  +precoUnitario: double
+  +preçoUnitário: double
   +calcularSubtotal(): double
 }
 
-class Endereco {
+class Endereço { ' Changed to Endereço
   +id: int
   +logradouro: String
   +numero: String
@@ -90,15 +90,15 @@ class Pagamento {
 }
 
 class PagamentoBoleto {
-  +codigoBarras: String
-  +dataVencimento: Date
+  +códigoDeBarras: String
+  +dataDeVencimento: Date
   +gerarBoleto(): void
 }
 
 class PagamentoCartao {
-  +numeroCartao: String
+  +númeroCartão: String
   +nomeTitular: String
-  +dataValidade: String
+  +dataDeValidade: String
   +cvv: String
   +processarPagamento(): boolean
 }
@@ -127,12 +127,12 @@ Pagamento <|-- PagamentoCartao
 
 Usuario "1" -- "1" Carrinho : possui
 Usuario "1" -- "0..*" Produto : cadastra/visualiza
-Cliente "1" -- "1..*" Endereco : possui
+Cliente "1" -- "1..*" Endereço : possui ' Changed to Endereço
 Cliente "1" -- "0..*" Pedido : realiza
-Pedido "1" -- "1..*" ItemPedido : contem
-Pedido "1" -- "1" Endereco : entrega em
+Pedido "1" -- "1..*" ItemPedido : contém
+Pedido "1" -- "1" Endereço : entrega em ' Changed to Endereço
 Pedido "1" -- "1" Pagamento : tem
-Carrinho "1" -- "0..*" ItemCarrinho : contem
+Carrinho "1" -- "0..*" ItemCarrinho : contém
 ItemCarrinho "1" -- "1" Produto : refere-se a
 ItemPedido "1" -- "1" Produto : refere-se a
 Produto "0..*" -- "0..*" Categoria : pertence a
