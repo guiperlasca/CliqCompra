@@ -69,7 +69,8 @@ class ItemPedido {
   +calcularSubtotal(): double
 }
 
-class Endereço { ' Changed to Endereço
+class Endereço {
+' Changed to Endereço
   +id: int
   +logradouro: String
   +numero: String
@@ -127,10 +128,12 @@ Pagamento <|-- PagamentoCartao
 
 Usuario "1" -- "1" Carrinho : possui
 Usuario "1" -- "0..*" Produto : cadastra/visualiza
-Cliente "1" -- "1..*" Endereço : possui ' Changed to Endereço
+Cliente "1" -- "1..*" Endereço : possui
+' Changed to Endereço
 Cliente "1" -- "0..*" Pedido : realiza
 Pedido "1" -- "1..*" ItemPedido : contém
-Pedido "1" -- "1" Endereço : entrega em ' Changed to Endereço
+Pedido "1" -- "1" Endereço : entrega em
+' Changed to Endereço
 Pedido "1" -- "1" Pagamento : tem
 Carrinho "1" -- "0..*" ItemCarrinho : contém
 ItemCarrinho "1" -- "1" Produto : refere-se a
