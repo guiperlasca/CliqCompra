@@ -1,5 +1,4 @@
 @startuml
-
 class Usuario {
   +id: int
   +nome: String
@@ -11,16 +10,11 @@ class Usuario {
 
 class Cliente {
   +cpf: String
+  +nomeFantasia: String
   +telefone: String
   +adicionarEndereco(Endereco): void
-  +realizarPedido(Pedido): void
-}
-
-class Vendedor {
-  +cnpj: String
-  +nomeFantasia: String
   +adicionarProduto(Produto): void
-  +visualizarPedidos(): List<Pedido>
+  +realizarPedido(Pedido): void
 }
 
 class Carrinho {
@@ -45,12 +39,6 @@ class Produto {
   +preço: double
   +estoque: int
   +atualizarEstoque(int): void
-}
-
-class Categoria {
-  +id: int
-  +nome: String
-  +obterProdutos(): List<Produto>
 }
 
 class Pedido {
@@ -90,41 +78,8 @@ class Pagamento {
   +reembolsar(): boolean
 }
 
-class PagamentoBoleto {
-  +códigoDeBarras: String
-  +dataDeVencimento: Date
-  +gerarBoleto(): void
-}
-
-class PagamentoCartao {
-  +númeroCartão: String
-  +nomeTitular: String
-  +dataDeValidade: String
-  +cvv: String
-  +processarPagamento(): boolean
-}
-
-enum StatusPagamento {
-  PENDENTE
-  APROVADO
-  REPROVADO
-  REEMBOLSADO
-}
-
-enum StatusPedido {
-  AGUARDANDO_PAGAMENTO
-  EM_PROCESSAMENTO
-  ENVIADO
-  ENTREGUE
-  CANCELADO
-}
-
 ' Relationships
 Usuario <|-- Cliente
-Usuario <|-- Vendedor
-
-Pagamento <|-- PagamentoBoleto
-Pagamento <|-- PagamentoCartao
 
 Usuario "1" -- "1" Carrinho : possui
 Usuario "1" -- "0..*" Produto : cadastra/visualiza
@@ -138,9 +93,4 @@ Pedido "1" -- "1" Pagamento : tem
 Carrinho "1" -- "0..*" ItemCarrinho : contém
 ItemCarrinho "1" -- "1" Produto : refere-se a
 ItemPedido "1" -- "1" Produto : refere-se a
-Produto "0..*" -- "0..*" Categoria : pertence a
-
-Pedido ..> StatusPedido
-Pagamento ..> StatusPagamento
-
 @enduml
