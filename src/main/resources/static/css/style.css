@@ -1,6 +1,6 @@
 /* General Body Styles */
 body {
-    font-family: Arial, sans-serif; /* Changed font */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Changed font */
     line-height: 1.6;
     margin: 0; /* Remove default margin */
     padding: 0; /* Remove default padding */
@@ -26,43 +26,98 @@ header {
     border-bottom: 3px solid #004085; /* Darker accent */
 }
 
+/* This rule is for the container inside the header */
+header .container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 0 20px; /* Adjust padding if h1 and nav are on same line */
+    max-width: 1200px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 header h1 {
     margin: 0;
     padding: 0;
     font-size: 2em;
-    color: #fff; /* Ensure header text is white */
+    color: #fff;
 }
 
 header nav ul {
     padding: 0;
-    margin: 0;
+    margin: 0; /* Ensure margin is 0 if flex handles spacing */
     list-style: none;
-    text-align: right; /* Align nav to the right */
+    /* text-align: right; /* REMOVE THIS as flex handles alignment */
 }
 
 header nav ul li {
-    display: inline;
-    margin-left: 20px;
+    display: inline; /* Will be part of flex, but display:inline won't hurt */
+    margin-left: 0; /* Reset margin, flex gap or padding on 'a' will handle spacing */
+}
+
+header nav ul li:first-child {
+    margin-left: 0; /* Ensure no margin on the first item */
 }
 
 header nav ul li a {
     color: #fff;
     text-decoration: none;
     font-weight: bold;
+    padding: 10px 15px; /* Added padding */
+    display: inline-block; /* To make padding effective */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
 }
 
 header nav ul li a:hover {
-    text-decoration: underline;
+    /* text-decoration: underline; /* Optional: Remove or keep if desired alongside bg change */
+    background-color: #004085; /* Darker accent from header border */
+    color: #f8f9fa; /* Lighter text on hover */
+    border-radius: 4px; /* Optional: slightly rounded corners on hover */
+}
+
+.nav-welcome-message {
+    color: #e0e0e0; /* Slightly dimmer than main links */
+    font-weight: normal;
+    margin-right: 15px; /* Keep existing margin */
+    padding: 10px 0; /* Align vertically with links if needed */
 }
 
 /* Main Content Area */
 main.container {
-    flex-grow: 1; /* Allow main content to take available space */
+    flex-grow: 1;
     background-color: #fff;
     padding: 30px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08); /* Slightly softer, more spread shadow */
     margin-top: 20px;
     margin-bottom: 20px;
+    border-radius: 8px; /* Added/Updated border-radius */
+}
+
+/* Heading Styles */
+h1, .h1 {
+    font-size: 2.25rem; /* ~36px */
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+h2, .h2 {
+    font-size: 1.875rem; /* ~30px */
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+}
+h3, .h3 {
+    font-size: 1.5rem; /* ~24px */
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+main.container h1 { /* Page titles within main content often use h1 */
+    margin-bottom: 1.5rem; /* More space after main page title */
 }
 
 /* Footer */
@@ -80,7 +135,7 @@ footer p {
 
 /* Forms Styling */
 form div {
-   margin-bottom: 15px; /* Increased spacing */
+   margin-bottom: 20px; /* Slightly increased spacing */
 }
 
 label {
@@ -92,26 +147,103 @@ label {
 input[type="text"],
 input[type="email"],
 input[type="password"],
-textarea { /* Added textarea for future use */
+input[type="number"], /* Added */
+select, /* Added for future use */
+textarea {
     width: 100%;
-    padding: 10px;
+    padding: 12px; /* Slightly increased padding */
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box; /* Important for width: 100% */
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Added transition */
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus, /* Added */
+select:focus, /* Added */
+textarea:focus {
+    border-color: #0056b3; /* Primary color from header */
+    box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25); /* Subtle glow effect */
+    outline: none; /* Remove default browser outline */
+}
+
+textarea {
+    resize: vertical; /* Allow vertical resize, prevent horizontal */
+    min-height: 80px; /* Set a minimum height */
+}
+
+input[type="file"] {
+    width: 100%; /* Occupy full width for consistency */
+    padding: 10px; /* Similar padding to other inputs */
+    border: 1px solid #ccc; /* Consistent border */
+    border-radius: 4px; /* Consistent border-radius */
+    box-sizing: border-box;
+    line-height: 1.5; /* Adjust line height for better appearance */
+}
+
+/* Optional: Style the button part of the file input for Webkit/Blink browsers */
+input[type="file"]::file-selector-button {
+    padding: 8px 12px;
+    margin-right: 10px;
+    border: none;
+    background-color: #e9ecef; /* Light grey, similar to table headers */
+    color: #333;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background-color: #dee2e6; /* Slightly darker on hover */
 }
 
 button[type="submit"] {
     background-color: #28a745; /* Green for submit buttons */
     color: white;
-    padding: 10px 15px;
+    padding: 12px 20px; /* Slightly increased padding */
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 1em;
+    transition: background-color 0.3s ease; /* Added transition */
 }
 
 button[type="submit"]:hover {
     background-color: #218838; /* Darker green on hover */
+}
+
+/* Checkbox and Radio Button Group Styling */
+.form-check-group {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #fff; /* Ensure background is white */
+}
+
+.form-check {
+    display: flex; /* Align checkbox and label */
+    align-items: center;
+    margin-bottom: 8px; /* Space between checkbox items */
+}
+
+.form-check:last-child {
+    margin-bottom: 0; /* No margin for the last item */
+}
+
+.form-check-input {
+    margin-right: 8px; /* Space between checkbox and label */
+    width: auto; /* Override width:100% from general input styles */
+    /* Add specific styling for checkboxes if needed, e.g., size */
+}
+
+.form-check-label {
+    font-weight: normal; /* Override general bold label for options */
+    margin-bottom: 0; /* Override general label margin */
+    display: inline; /* Keep it inline with checkbox */
 }
 
 /* Table Styling */
@@ -123,14 +255,21 @@ table {
 
 table th, table td {
     border: 1px solid #ddd;
-    padding: 10px;
+    padding: 12px 15px; /* Slightly increased padding */
     text-align: left;
+    vertical-align: middle; /* Added */
 }
 
 table th {
     background-color: #e9ecef; /* Light grey for table headers */
     color: #333;
     font-weight: bold;
+    border-bottom-width: 2px; /* Emphasize header bottom border */
+}
+
+table tfoot td {
+    font-weight: bold; /* Make footer text bold, e.g., for totals */
+    background-color: #f8f9fa; /* Optional: slight background for footer */
 }
 
 table tr:nth-child(even) {
@@ -142,17 +281,26 @@ table tr:nth-child(even) {
     padding: 15px; /* Increased padding */
     margin-bottom: 20px; /* Increased margin */
     border: 1px solid transparent;
-    border-radius: 4px;
+    border-radius: 0.375rem; /* Slightly larger radius */
+    border-left-width: 5px; /* Add thicker left border for emphasis */
 }
 .alert-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
+    color: #0f5132; /* Darker text for better contrast */
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+    border-left-color: #0f5132; /* Match text color or a darker shade of success */
 }
 .alert-danger {
-    color: #721c24;
+    color: #842029; /* Darker text */
     background-color: #f8d7da;
-    border-color: #f5c6cb;
+    border-color: #f5c2c7;
+    border-left-color: #842029;
+}
+.alert-info {
+    color: #055160;
+    background-color: #cff4fc;
+    border-color: #b6effb;
+    border-left-color: #055160;
 }
 
 /* Navigation Logout Button Styling */
@@ -170,4 +318,477 @@ table tr:nth-child(even) {
 
 .nav-logout-button:hover {
     text-decoration: underline;
+}
+
+/* Category Filter and Product Display Styles */
+.category-filter-container {
+    margin-bottom: 20px;
+    padding: 15px; /* Increased padding */
+    border: 1px solid #e0e0e0; /* Slightly darker border */
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Light background */
+}
+
+.category-filter-container h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    text-decoration: none; /* Ensure links styled as buttons don't have underline */
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+
+.btn-primary { /* For Add to Cart button, if not using submit default */
+    color: #fff;
+    background-color: #0056b3; /* Primary color */
+    border-color: #0056b3;
+}
+
+.btn-primary:hover {
+    background-color: #004085; /* Darker primary */
+    border-color: #003770;
+}
+
+.btn-outline-primary {
+    color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary.active {
+    color: #fff;
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-outline-secondary {
+    color: #6c757d; /* Bootstrap secondary color */
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover, .btn-outline-secondary.active {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Adjusted minmax */
+    gap: 25px; /* Increased gap */
+    margin-top: 20px;
+}
+
+.product-card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0; /* Slightly softer border */
+    border-radius: 8px;
+    overflow: hidden; /* To contain image border-radius if top-corners are rounded */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Softer shadow */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex; /* Added for better internal structure */
+    flex-direction: column; /* Added */
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Enhanced shadow on hover */
+}
+
+.product-image {
+    width: 100%;
+    height: 220px; /* Increased height */
+    object-fit: cover; /* Changed from 'contain' to 'cover' for better fill */
+}
+
+.product-image-placeholder {
+    width: 100%;
+    height: 220px;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-style: italic;
+}
+
+.product-card-content {
+    padding: 15px;
+    flex-grow: 1; /* Allow content to fill card */
+    display: flex; /* For footer alignment */
+    flex-direction: column; /* For footer alignment */
+}
+
+.product-name {
+    font-size: 1.25em; /* Slightly larger */
+    font-weight: 600; /* Semi-bold */
+    margin-top: 0; /* Remove default h3 margin-top */
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.product-price {
+    font-size: 1.15em; /* Slightly larger */
+    color: #0056b3; /* Primary theme color */
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.product-description {
+    font-size: 0.9em;
+    color: #555; /* Slightly darker text */
+    margin-bottom: 15px;
+    line-height: 1.5;
+    flex-grow: 1; /* Allow description to take space before form */
+    /* For truncation (optional, if desired uncomment and set height):
+    height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    */
+}
+
+.add-to-cart-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: auto;
+}
+.add-to-cart-form .product-quantity-input {
+    width: 100%;
+    margin-right: 0;
+    text-align: center; /* Center quantity text */
+}
+.add-to-cart-form .btn {
+   width: 100%;
+   padding-top: 0.5rem;
+   padding-bottom: 0.5rem;
+}
+
+/* Utility Classes */
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+
+/* Styles for inputs/forms within tables */
+.table-quantity-input {
+    width: 65px; /* Standardized width */
+    padding: 6px 8px; /* Smaller padding for compact fit */
+    margin-right: 5px; /* Space before button */
+    /* It will inherit general input styles, these are overrides */
+}
+
+table td form {
+    display: flex; /* Helps align input and button */
+    align-items: center;
+}
+table td form.inline-form { /* if some forms need to remain truly inline */
+    display: inline;
+}
+
+/* Additional Button Color Scheme Classes */
+.btn-secondary { /* Solid secondary button */
+    color: #fff;
+    background-color: #6c757d; /* Bootstrap secondary color */
+    border-color: #6c757d;
+}
+.btn-secondary:hover {
+    color: #fff;
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+.btn-info {
+    color: #fff;
+    background-color: #17a2b8; /* Bootstrap info color */
+    border-color: #17a2b8;
+}
+.btn-info:hover {
+    color: #fff;
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+.btn-danger {
+    color: #fff;
+    background-color: #dc3545; /* Bootstrap danger color */
+    border-color: #dc3545;
+}
+.btn-danger:hover {
+    color: #fff;
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+.btn-success { /* This might override button[type="submit"] if not careful, but useful for non-submit success buttons */
+    color: #fff;
+    background-color: #28a745; /* Bootstrap success color */
+    border-color: #28a745;
+}
+.btn-success:hover {
+    color: #fff;
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.btn-warning {
+    color: #212529; /* Dark text for light warning background */
+    background-color: #ffc107; /* Bootstrap warning color */
+    border-color: #ffc107;
+}
+.btn-warning:hover {
+    color: #212529;
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+/* General HR Styling */
+hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Spacing Utilities */
+.m-0 { margin: 0 !important; }
+.mt-0 { margin-top: 0 !important; }
+.mr-0 { margin-right: 0 !important; }
+.mb-0 { margin-bottom: 0 !important; }
+.ml-0 { margin-left: 0 !important; }
+.mx-0 { margin-left: 0 !important; margin-right: 0 !important; }
+.my-0 { margin-top: 0 !important; margin-bottom: 0 !important; }
+
+.m-1 { margin: 0.25rem !important; }
+.mt-1 { margin-top: 0.25rem !important; }
+.mr-1 { margin-right: 0.25rem !important; }
+.mb-1 { margin-bottom: 0.25rem !important; }
+.ml-1 { margin-left: 0.25rem !important; }
+.mx-1 { margin-left: 0.25rem !important; margin-right: 0.25rem !important; }
+.my-1 { margin-top: 0.25rem !important; margin-bottom: 0.25rem !important; }
+
+.m-2 { margin: 0.5rem !important; }
+.mt-2 { margin-top: 0.5rem !important; }
+.mr-2 { margin-right: 0.5rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.ml-2 { margin-left: 0.5rem !important; }
+.mx-2 { margin-left: 0.5rem !important; margin-right: 0.5rem !important; }
+.my-2 { margin-top: 0.5rem !important; margin-bottom: 0.5rem !important; }
+
+.m-3 { margin: 1rem !important; }
+.mt-3 { margin-top: 1rem !important; }
+.mr-3 { margin-right: 1rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.ml-3 { margin-left: 1rem !important; }
+.mx-3 { margin-left: 1rem !important; margin-right: 1rem !important; }
+.my-3 { margin-top: 1rem !important; margin-bottom: 1rem !important; }
+
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+
+.p-0 { padding: 0 !important; }
+.pt-0 { padding-top: 0 !important; }
+.pr-0 { padding-right: 0 !important; }
+.pb-0 { padding-bottom: 0 !important; }
+.pl-0 { padding-left: 0 !important; }
+.px-0 { padding-left: 0 !important; padding-right: 0 !important; }
+.py-0 { padding-top: 0 !important; padding-bottom: 0 !important; }
+
+.p-1 { padding: 0.25rem !important; }
+.pt-1 { padding-top: 0.25rem !important; }
+.pr-1 { padding-right: 0.25rem !important; }
+.pb-1 { padding-bottom: 0.25rem !important; }
+.pl-1 { padding-left: 0.25rem !important; }
+.px-1 { padding-left: 0.25rem !important; padding-right: 0.25rem !important; }
+.py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+
+.p-2 { padding: 0.5rem !important; }
+.pt-2 { padding-top: 0.5rem !important; }
+.pr-2 { padding-right: 0.5rem !important; }
+.pb-2 { padding-bottom: 0.5rem !important; }
+.pl-2 { padding-left: 0.5rem !important; }
+.px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+
+.p-3 { padding: 1rem !important; }
+.pt-3 { padding-top: 1rem !important; }
+.pr-3 { padding-right: 1rem !important; }
+.pb-3 { padding-bottom: 1rem !important; }
+.pl-3 { padding-left: 1rem !important; }
+.px-3 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.py-3 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+
+/* Flexbox Utilities */
+.d-flex { display: flex !important; }
+.flex-column { flex-direction: column !important; }
+.flex-row { flex-direction: row !important; }
+.justify-content-start { justify-content: flex-start !important; }
+.justify-content-end { justify-content: flex-end !important; }
+.justify-content-center { justify-content: center !important; }
+.justify-content-between { justify-content: space-between !important; }
+.justify-content-around { justify-content: space-around !important; }
+.align-items-start { align-items: flex-start !important; }
+.align-items-end { align-items: flex-end !important; }
+.align-items-center { align-items: center !important; }
+.align-items-baseline { align-items: baseline !important; }
+.align-items-stretch { align-items: stretch !important; }
+
+/* Text Color Utilities */
+.text-primary { color: #0056b3 !important; }
+.text-secondary { color: #6c757d !important; }
+.text-success { color: #28a745 !important; }
+.text-danger { color: #dc3545 !important; }
+.text-warning { color: #ffc107 !important; }
+.text-info { color: #17a2b8 !important; }
+.text-light { color: #f8f9fa !important; }
+.text-dark { color: #343a40 !important; }
+.text-muted { color: #6c757d !important; }
+.text-white { color: #fff !important; }
+
+/* Display Utilities */
+.d-block { display: block !important; }
+.d-inline { display: inline !important; }
+.d-inline-block { display: inline-block !important; }
+.d-none { display: none !important; }
+
+/* Content List Styling (for home page, etc.) */
+.content-list {
+    list-style: none;
+    padding-left: 0;
+}
+.content-list li {
+    background-color: #f8f9fa; /* Light background for each item */
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid #eee;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.content-list li:hover {
+    background-color: #e9ecef;
+    border-color: #ddd;
+}
+.content-list li a {
+    text-decoration: none;
+    font-weight: 500; /* Medium weight */
+    color: #0056b3; /* Primary color */
+    display: block; /* Make whole area clickable */
+}
+.content-list li a:hover {
+    text-decoration: underline;
+}
+
+/* Navigation Dropdown */
+header nav ul li.nav-item-dropdown {
+    position: relative; /* For absolute positioning of the dropdown menu */
+    display: inline-block; /* Keep it inline with other nav items */
+}
+
+/* Style for the main Perfil link if it's not a standard 'a' tag or needs specific styling */
+header nav ul li.nav-item-dropdown > a.nav-link {
+    /* Inherits general 'a' styling from nav, add specifics if needed */
+}
+
+.dropdown-arrow {
+    font-size: 0.8em; /* Smaller arrow */
+    margin-left: 5px;
+}
+
+header nav ul li.nav-item-dropdown .dropdown-menu {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%; /* Position below the Perfil link */
+    left: 0;
+    background-color: #004085; /* Darker blue, like header accent */
+    min-width: 220px; /* Adjust as needed */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1000; /* Ensure it's above other content */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 0 0 4px 4px; /* Rounded bottom corners */
+}
+
+header nav ul li.nav-item-dropdown:hover .dropdown-menu {
+    display: block; /* Show on hover */
+}
+
+header nav ul li.nav-item-dropdown .dropdown-menu li a.dropdown-item {
+    color: #fff;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-weight: normal; /* Override bold from main nav links if desired */
+    transition: background-color 0.2s ease;
+}
+
+header nav ul li.nav-item-dropdown .dropdown-menu li a.dropdown-item:hover {
+    background-color: #0056b3; /* Lighter blue, main header color */
+    color: #fff; /* Ensure text remains white */
+}
+
+.dropdown-divider {
+    height: 1px;
+    margin: .5rem 0;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 0;
+}
+
+/* Cart Icon Styling */
+.nav-cart-link {
+    font-size: 1.5em; /* Make Unicode icon larger */
+    padding-top: 8px; /* Adjust padding to align with text links */
+    padding-bottom: 8px;
+}
+.nav-cart-link:hover {
+    background-color: #004085 !important; /* Ensure consistent hover */
+    border-radius: 4px;
+}
+.cart-text-alt { /* For screen readers or if icons fail */
+    /* Uses .d-none utility class to hide visually */
+}
+
+/* Cart Popup Notification */
+.cart-popup {
+    position: fixed;
+    bottom: -100px; /* Start off-screen */
+    right: 20px;
+    background-color: #28a745; /* Green, like success messages */
+    color: white;
+    padding: 16px 25px;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1050; /* High z-index to be on top */
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out, bottom 0.4s ease-in-out;
+    font-size: 0.95em;
+}
+
+.cart-popup.show {
+    opacity: 1;
+    bottom: 30px; /* Slide in to this position */
 }

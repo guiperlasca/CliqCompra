@@ -33,14 +33,14 @@
                         <td th:text="${item.productName}">Product Name</td>
                         <td th:text="${#numbers.formatCurrency(item.unitPrice)}">$0.00</td>
                         <td>
-                            <form th:action="@{/cart/update/{productId}(productId=${item.productId})}" method="post" style="display: inline;">
-                                <input type="number" name="quantity" th:value="${item.quantity}" min="1" style="width: 60px;" />
+                            <form th:action="@{/cart/update/{productId}(productId=${item.productId})}" method="post" class="inline-form">
+                                <input type="number" name="quantity" th:value="${item.quantity}" min="1" class="table-quantity-input" />
                                 <button type="submit" class="btn btn-sm btn-info">Atualizar</button>
                             </form>
                         </td>
                         <td th:text="${#numbers.formatCurrency(item.subtotal)}">$0.00</td>
                         <td>
-                            <form th:action="@{/cart/remove/{productId}(productId=${item.productId})}" method="post" style="display: inline;">
+                            <form th:action="@{/cart/remove/{productId}(productId=${item.productId})}" method="post" class="inline-form">
                                 <button type="submit" class="btn btn-sm btn-danger">Remover</button>
                             </form>
                         </td>
@@ -48,23 +48,23 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="3" style="text-align: right;"><strong>Total Geral:</strong></td>
+                        <td colspan="3" class="text-right"><strong>Total Geral:</strong></td>
                         <td colspan="2" th:text="${#numbers.formatCurrency(shoppingCart.grandTotal)}">$0.00</td>
                     </tr>
                 </tfoot>
             </table>
             <hr/>
-            <div style="text-align: right;">
+            <div class="text-right mt-3">
                 <a th:href="@{/produtos}" class="btn btn-secondary" style="margin-right:10px;">Continuar Comprando</a>
                 <!-- Conditional Checkout Button -->
                 <th:block th:if="${isUserLoggedIn and loggedInUserType == 'CLIENTE'}">
                     <a th:href="@{/checkout/address-select}" class="btn btn-success">Finalizar Compra</a>
                 </th:block>
                 <th:block th:unless="${isUserLoggedIn and loggedInUserType == 'CLIENTE'}">
-                     <p th:if="${!isUserLoggedIn}" style="margin-top:10px;">
+                     <p th:if="${!isUserLoggedIn}" class="mt-2">
                         <a th:href="@{/login}" class="btn btn-warning">Entre como Cliente para Finalizar a Compra</a>
                      </p>
-                     <p th:if="${isUserLoggedIn and loggedInUserType != 'CLIENTE'}" style="margin-top:10px;" class="text-warning">
+                     <p th:if="${isUserLoggedIn and loggedInUserType != 'CLIENTE'}" class="mt-2 text-warning">
                         Apenas Clientes podem finalizar a compra.
                      </p>
                 </th:block>

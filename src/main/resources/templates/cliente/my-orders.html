@@ -30,7 +30,7 @@
             <tbody>
                 <tr th:each="pedido : ${pedidos}">
                     <td th:text="${pedido.id}">[ID]</td>
-                    <td th:text="${#temporals.format(pedido.dataRealizacao, 'dd-MMM-yyyy HH:mm')}">[Date]</td>
+                    <td th:text="${#temporals.format(pedido.dataRealizacao.toLocalDateTime(), 'dd-MMM-yyyy HH:mm')}">[Date]</td>
                     <td th:text="${#numbers.formatCurrency(pedido.valorTotal)}">[Total]</td>
                     <td th:text="${pedido.status}">[Status]</td>
                     <td>
