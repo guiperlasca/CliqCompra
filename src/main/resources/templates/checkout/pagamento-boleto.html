@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Detalhes do Boleto</title>
+    <style>
+        .boleto-details { margin-top: 20px; padding: 20px; border: 1px solid #eee; background-color: #f9f9f9; }
+        .boleto-details p { font-size: 1.1em; }
+        .boleto-barcode { font-family: 'Courier New', Courier, monospace; font-size: 1.2em; word-break: break-all; padding: 10px; background-color: #fff; border: 1px dashed #ccc; margin-bottom:15px;}
+    </style>
+</head>
+<body>
+    <section layout:fragment="content">
+        <div class="container">
+            <h1>Detalhes do Boleto</h1>
+
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+            <div th:if="${pedido}" class="boleto-details">
+                <p><strong>Pedido #:</strong> <span th:text="${pedido.id}">ID</span></p>
+                <p><strong>Valor Total:</strong> <span th:text="${#numbers.formatCurrency(pedido.valorTotal)}">R$ 0,00</span></p>
+
+                <div th:if="${boleto}"> <!-- Assuming 'boleto' is the PagamentoBoleto object -->
+                    <h3>Boleto Gerado</h3>
+                    <p><strong>Data de Vencimento:</strong> <span th:text="${#dates.format(boleto.dataVencimento, 'dd/MM/yyyy')}">dd/MM/yyyy</span></p>
+                    <p><strong>Código de Barras (Simulado):</strong></p>
+                    <div class="boleto-barcode" th:text="${boleto.codigoBarras}">00000000000000000000000000000000000000000000</div>
+                    <p>
+                        <strong>Link do Boleto (Simulado):</strong>
+                        <a th:if="${boleto.urlBoleto}" th:href="${boleto.urlBoleto}" target="_blank" th:text="${boleto.urlBoleto}">Visualizar Boleto</a>
+                        <span th:unless="${boleto.urlBoleto}">Link não disponível</span>
+                    </p>
+                    <p class="mt-3"><em>Por favor, pague este boleto até a data de vencimento para confirmar seu pedido.</em></p>
+                     <p><small><em>Este é um boleto simulado.</em></small></p>
+                </div>
+                 <div th:unless="${boleto}" class="alert alert-warning">
+                    Detalhes do boleto não disponíveis no momento.
+                </div>
+            </div>
+            <div th:unless="${pedido}" class="alert alert-warning">
+                Detalhes do pedido não encontrados.
+            </div>
+
+            <div class="mt-4">
+                <a th:href="@{/cliente/pedidos}" class="btn btn-secondary">Meus Pedidos</a>
+                <a th:href="@{/}" class="btn btn-primary">Página Inicial</a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

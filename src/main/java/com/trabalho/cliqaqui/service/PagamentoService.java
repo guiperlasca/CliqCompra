@@ -64,10 +64,10 @@ public class PagamentoService {
 
         if (pagamentoAprovadoPeloGateway) {
             pagamento.setStatus(StatusPagamento.APROVADO);
-            pedido.setStatus(StatusPedido.PAGO); // Or PROCESSANDO_PAGAMENTO then PAGO via webhook
+            pedido.setStatus(StatusPedido.PROCESSANDO); // Or PROCESSANDO_PAGAMENTO then PAGO via webhook
         } else {
             pagamento.setStatus(StatusPagamento.RECUSADO);
-            pedido.setStatus(StatusPedido.FALHA_PAGAMENTO);
+            pedido.setStatus(StatusPedido.CANCELADO);
         }
 
         PagamentoCartao pagamentoSalvo = pagamentoRepository.save(pagamento);
@@ -143,7 +143,7 @@ public class PagamentoService {
         PagamentoBoleto pagamentoSalvo = pagamentoRepository.save(pagamento);
 
         pedido.setPagamento(pagamentoSalvo);
-        pedido.setStatus(StatusPedido.AGUARDANDO_PAGAMENTO); // Update order status
+        pedido.setStatus(StatusPedido.PENDENTE); // Update order status
         pedidoRepository.save(pedido);
 
         System.out.println("Simulação: Boleto gerado para pedido " + pedidoId + " com código de barras: " + codigoBarrasSimulado);
@@ -171,7 +171,7 @@ public class PagamentoService {
 
         Pagamento pagamentoSalvo = pagamentoRepository.save(pagamento);
 
-        pedido.setStatus(StatusPedido.PAGO);
+        pedido.setStatus(StatusPedido.PROCESSANDO);
         pedidoRepository.save(pedido);
 
         System.out.println("Simulação: Pagamento ID " + pagamentoId + " confirmado para Pedido ID " + pedido.getId());
@@ -195,7 +195,7 @@ public class PagamentoService {
         pagamento.setStatus(StatusPagamento.RECUSADO); // Or a new status like CANCELADO
         Pagamento pagamentoSalvo = pagamentoRepository.save(pagamento);
 
-        pedido.setStatus(StatusPedido.FALHA_PAGAMENTO); // Or CANCELADO if applicable
+        pedido.setStatus(StatusPedido.CANCELADO); // Or CANCELADO if applicable
         pedidoRepository.save(pedido);
 
         System.out.println("Simulação: Pagamento ID " + pagamentoId + " marcado como RECUSADO/FALHA para Pedido ID " + pedido.getId());

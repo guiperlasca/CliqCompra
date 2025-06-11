@@ -77,11 +77,10 @@ public class PagamentoController {
              return "redirect:/cliente/pedidos/" + pedidoId; // Redirect to order details page
         }
 
-        // Check if order can be paid (e.g. status is AGUARDANDO_PAGAMENTO or PENDENTE)
+        // Check if order can be paid (e.g. status is PENDENTE)
         // This logic can be expanded based on your order workflow
-        if (pedido.getStatus() != com.trabalho.cliqaqui.model.StatusPedido.AGUARDANDO_PAGAMENTO &&
-            pedido.getStatus() != com.trabalho.cliqaqui.model.StatusPedido.PENDENTE &&
-            pedido.getStatus() != com.trabalho.cliqaqui.model.StatusPedido.FALHA_PAGAMENTO) {
+        if (pedido.getStatus() != com.trabalho.cliqaqui.model.StatusPedido.PENDENTE &&
+            pedido.getStatus() != com.trabalho.cliqaqui.model.StatusPedido.CANCELADO) { // Allow retry if CANCELADO due to payment failure
             redirectAttributes.addFlashAttribute("errorMessage", "Este pedido não pode ser pago no momento (Status: " + pedido.getStatus() + ").");
             return "redirect:/cliente/pedidos/" + pedidoId;
         }
@@ -139,7 +138,7 @@ public class PagamentoController {
             PagamentoCartao pagamentoCartao = pagamentoService.processarPagamentoCartao(pedidoId, cartaoDto);
             if (pagamentoCartao.getStatus() == StatusPagamento.APROVADO) {
                 redirectAttributes.addFlashAttribute("successMessage", "Pagamento com cartão aprovado!");
-                return "redirect:/cliente/pedidos/" + pedidoId; // Redirect to order details
+                return "redirect:/checkout/order/" + pedidoId + "/confirmation";
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Pagamento com cartão recusado. Verifique os dados ou tente outra forma de pagamento.");
                 return "redirect:/pagamento/pedido/" + pedidoId + "/escolher";

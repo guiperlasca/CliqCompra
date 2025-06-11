@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <title>Escolher Forma de Pagamento</title>
+    <style>
+        .payment-options { margin-top: 20px; }
+        .payment-option { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+        .payment-option h3 { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <section layout:fragment="content">
+        <div class="container">
+            <h1>Escolher Forma de Pagamento</h1>
+            <p>Pedido #<span th:text="${pedido.id}">ID</span> - Valor Total: <span th:text="${#numbers.formatCurrency(pedido.valorTotal)}">R$ 0,00</span></p>
+
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+            <div th:if="${infoMessage}" class="alert alert-info" th:text="${infoMessage}"></div>
+
+            <div class="payment-options">
+                <!-- Opção Cartão de Crédito -->
+                <div class="payment-option">
+                    <h3>Cartão de Crédito</h3>
+                    <p>Pague com seu cartão de crédito. Aceitamos as principais bandeiras (simulado).</p>
+                    <form th:action="@{/pagamento/pedido/{pedidoId}/cartao(pedidoId=${pedido.id})}" th:object="${cartaoCreditoDTO}" method="post">
+                        <div class="mb-3">
+                            <label for="numeroCartao" class="form-label">Número do Cartão (Simulado)</label>
+                            <input type="text" id="numeroCartao" th:field="*{numeroCartao}" class="form-control" placeholder="0000111122223333" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="nomeTitular" class="form-label">Nome do Titular</label>
+                            <input type="text" id="nomeTitular" th:field="*{nomeTitular}" class="form-control" placeholder="Nome Completo" required />
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="mesValidade" class="form-label">Mês Validade (MM)</label>
+                                <input type="text" id="mesValidade" th:field="*{mesValidade}" class="form-control" placeholder="MM" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label for="anoValidade" class="form-label">Ano Validade (YYYY)</label>
+                                <input type="text" id="anoValidade" th:field="*{anoValidade}" class="form-control" placeholder="YYYY" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label for="cvv" class="form-label">CVV (Simulado)</label>
+                                <input type="text" id="cvv" th:field="*{cvv}" class="form-control" placeholder="123" required />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="numeroParcelas" class="form-label">Número de Parcelas</label>
+                            <select id="numeroParcelas" th:field="*{numeroParcelas}" class="form-select" required>
+                                <option th:each="i : ${#numbers.sequence(1, 6)}" th:value="${i}" th:text="${i} + 'x (Simulado)'"></option>
+                                <!-- Max 6 installments for simulation. Real app would get this from gateway/config -->
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Pagar com Cartão</button>
+                         <p class="mt-2"><small><em>Este é um formulário simulado. Não insira dados reais de cartão.</em></small></p>
+                    </form>
+                </div>
+
+                <!-- Opção Boleto Bancário -->
+                <div class="payment-option">
+                    <h3>Boleto Bancário</h3>
+                    <p>Gere um boleto para pagar seu pedido.</p>
+                    <form th:action="@{/pagamento/pedido/{pedidoId}/boleto(pedidoId=${pedido.id})}" method="post">
+                        <button type="submit" class="btn btn-secondary">Gerar Boleto</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

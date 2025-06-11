@@ -23,6 +23,29 @@
             <p><strong>Total do Pedido:</strong> <span th:text="${#numbers.formatCurrency(pedido.valorTotal)}">[Order Total]</span></p>
             <p><strong>Status:</strong> <span th:text="${pedido.status}">[Order Status]</span></p>
 
+            <!-- Payment Details Section -->
+            <div th:if="${pedido.pagamento != null}" class="mt-4">
+                <h3>Detalhes do Pagamento:</h3>
+                <p><strong>Status do Pagamento:</strong> <span th:text="${pedido.pagamento.status}">[Payment Status]</span></p>
+                <p><strong>Valor Pago:</strong> <span th:text="${#numbers.formatCurrency(pedido.pagamento.valor)}">[Payment Amount]</span></p>
+                <p><strong>Data do Pagamento:</strong> <span th:text="${#temporals.format(pedido.pagamento.dataPagamento.toInstant(), 'dd-MMM-yyyy HH:mm')}">[Payment Date]</span></p>
+
+                <div th:if="${pedido.pagamento instanceof T(com.trabalho.cliqaqui.model.PagamentoCartao)}">
+                    <p><strong>Tipo:</strong> Cartão de Crédito</p>
+                    <p><strong>Bandeira:</strong> <span th:text="${pedido.pagamento.bandeiraCartao}">[Card Brand]</span></p>
+                    <p><strong>Últimos 4 Dígitos:</strong> <span th:text="${pedido.pagamento.ultimosQuatroDigitos}">[Last 4]</span></p>
+                    <p><strong>Parcelas:</strong> <span th:text="${pedido.pagamento.numeroParcelas}">[Installments]</span>x</p>
+                </div>
+
+                <div th:if="${pedido.pagamento instanceof T(com.trabalho.cliqaqui.model.PagamentoBoleto)}">
+                    <p><strong>Tipo:</strong> Boleto Bancário</p>
+                    <p><strong>Código de Barras:</strong> <span th:text="${pedido.pagamento.codigoBarras}">[Barcode]</span></p>
+                    <p><strong>Data de Vencimento:</strong> <span th:text="${#dates.format(pedido.pagamento.dataVencimento, 'dd/MM/yyyy')}">[Due Date]</span></p>
+                    <p><a th:if="${pedido.pagamento.urlBoleto}" th:href="${pedido.pagamento.urlBoleto}" target="_blank">Ver Boleto</a></p>
+                </div>
+            </div>
+            <hr th:if="${pedido.pagamento != null}" />
+
             <h3>Endereço de Entrega:</h3>
             <p th:if="${pedido.enderecoEntrega}">
                 <span th:text="${pedido.enderecoEntrega.rua} + ', ' + ${pedido.enderecoEntrega.numero}"></span><br/>
