@@ -11,7 +11,7 @@
         <p>Esta é a área de conteúdo principal da página inicial. Explore nosso site usando a navegação acima.</p>
 
         <!-- Add Product Link for Logged-in Users -->
-        <div th:if="${isUserLoggedIn}" style="margin-top: 20px; margin-bottom: 20px;">
+        <div th:if="${isUserLoggedIn}" class="my-4">
             <p>Quer vender seus próprios itens?</p>
             <a th:href="@{/produtos/add}" class="btn btn-primary">Adicionar Novo Produto</a>
         </div>
@@ -19,7 +19,7 @@
         <!-- Specific calls to action or featured content for the home page can go here -->
         <!-- For example, if these links are specific to the home page content: -->
         <p>Pronto para começar?</p>
-        <ul>
+        <ul class="content-list mt-3">
             <li><a th:href="@{/registrar}">Crie sua conta</a></li>
             <li><a th:href="@{/produtos}">Navegue por nossos produtos</a></li>
             <li><a th:href="@{/login}">Entre na sua conta</a></li>

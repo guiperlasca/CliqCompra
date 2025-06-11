@@ -27,25 +27,30 @@
                     <!-- If user IS logged in -->
                     <th:block th:if="${isUserLoggedIn}">
                         <li>
-                            <span style="color: #fff; margin-right: 15px;">
+                            <span class="nav-welcome-message">
                                 Bem-vindo(a), <span th:text="${session.loggedInUserName != null ? session.loggedInUserName : loggedInUserEmail}"></span> (<span th:text="${loggedInUserType}"></span>)
                             </span>
                         </li>
 
-                        <!-- Links for all logged-in users -->
-                        <li><a th:href="@{/produtos/add}">Adicionar Produto</a></li>
-                        <li><a th:href="@{/produtos/my}">Meus Produtos</a></li>
-
-                        <!-- Cliente Specific Links (if they remain distinct) -->
-                        <th:block th:if="${loggedInUserType == 'CLIENTE'}">
-                            <li><a th:href="@{/cart}">Meu Carrinho</a></li>
-                            <li><a th:href="@{/cliente/pedidos}">Meus Pedidos</a></li>
-                            <li><a th:href="@{/cliente/enderecos}">Meus Endereços</a></li>
-                        </th:block>
-
-                        <li>
-                            <a th:href="@{/logout}">Sair</a>
+                        <!-- Profile Dropdown -->
+                        <li class="nav-item-dropdown">
+                            <a href="#" class="nav-link">Perfil <span class="dropdown-arrow">&#9662;</span></a>
+                            <ul class="dropdown-menu">
+                                <li><a th:href="@{/produtos/add}" class="dropdown-item">Adicionar Produto</a></li>
+                                <li><a th:href="@{/produtos/my}" class="dropdown-item">Meus Produtos</a></li>
+                                <th:block th:if="${loggedInUserType == 'CLIENTE'}">
+                                    <li><a th:href="@{/cliente/pedidos}" class="dropdown-item">Meus Pedidos</a></li>
+                                    <li><a th:href="@{/cliente/enderecos}" class="dropdown-item">Meus Endereços</a></li>
+                                </th:block>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a th:href="@{/logout}" class="dropdown-item">Sair</a></li>
+                            </ul>
                         </li>
+
+                        <!-- Cart Icon Link - CLIENTE Specific -->
+                        <th:block th:if="${loggedInUserType == 'CLIENTE'}">
+                            <li><a th:href="@{/cart}" class="nav-cart-link" title="Meu Carrinho">🛒<span class="cart-text-alt d-none">Carrinho</span></a></li>
+                        </th:block>
                     </th:block>
                 </ul>
             </nav>
@@ -64,5 +69,27 @@
             <p>&copy; 2023 CliqCompra. Todos os direitos reservados.</p>
         </div>
     </footer>
+
+    <!-- Cart Popup Notification -->
+    <div id="cart-popup" class="cart-popup" role="alert" aria-live="polite">
+        Produto adicionado ao carrinho!
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', function() {
+            var cartMessage = /*[[${cartMessage}]]*/ null; // Comes from Spring flash attribute
+            if (cartMessage && typeof showCartPopup === 'function') {
+                showCartPopup(cartMessage);
+            } else if (cartMessage) {
+                // Fallback if showCartPopup isn't defined yet, though it should be.
+                console.warn('cartMessage found, but showCartPopup function is not available.');
+                // Basic alert as a fallback (optional)
+                // alert(cartMessage);
+            }
+        });
+    /*]]>*/
+    </script>
 </body>
 </html>
