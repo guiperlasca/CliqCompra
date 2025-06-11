@@ -7,6 +7,7 @@ import java.util.Date;
 public class PagamentoBoleto extends Pagamento {
     private String codigoBarras;
     private Date dataVencimento;
+    private String urlBoleto;
 
     public PagamentoBoleto() {
         super();
@@ -26,6 +27,14 @@ public class PagamentoBoleto extends Pagamento {
 
     public void setDataVencimento(Date dataVencimento) {
         this.dataVencimento = dataVencimento;
+    }
+
+    public String getUrlBoleto() {
+        return urlBoleto;
+    }
+
+    public void setUrlBoleto(String urlBoleto) {
+        this.urlBoleto = urlBoleto;
     }
 
     public void emitirBoleto() {
