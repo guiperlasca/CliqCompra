@@ -582,10 +582,10 @@ public class WebController {
 
         try {
             shoppingCartService.addItem(usuario, productId, quantity);
-            redirectAttributes.addFlashAttribute("successMessage", "Produto adicionado ao carrinho!");
-        } catch (jakarta.persistence.EntityNotFoundException e) { // More specific catch
+            redirectAttributes.addFlashAttribute("cartMessage", "Produto adicionado ao carrinho!"); // MODIFIED LINE
+        } catch (jakarta.persistence.EntityNotFoundException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Produto não encontrado!");
-        } catch (IllegalArgumentException e) { // Catch validation errors from service
+        } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         } catch (Exception e) {
             // Log e.printStackTrace(); // Good practice to log unexpected errors
