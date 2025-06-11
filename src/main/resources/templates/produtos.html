@@ -34,7 +34,7 @@
 
         <div class="product-grid" th:unless="${#lists.isEmpty(produtos)}">
             <div class="product-card" th:each="produto : ${produtos}">
-                <img th:if="${produto.fotoUrl != null}" th:src="${produto.fotoUrl}" th:alt="${produto.nome}" class="product-image"/>
+                <img th:if="${produto.fotoUrl != null}" th:src="@{${produto.fotoUrl}}" th:alt="${produto.nome}" class="product-image"/>
                 <div th:unless="${produto.fotoUrl != null}" class="product-image-placeholder">
                     <span>Sem imagem</span>
                 </div>

@@ -19,6 +19,7 @@ public abstract class Usuario {
     private Integer id;
 
     private String nome;
+    @Column(unique = true)
     private String email;
     protected String senhaHash;
     private String cpfCnpj;
