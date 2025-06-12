@@ -20,7 +20,7 @@ A estrutura do modelo de dados do sistema está representada no diagrama UML aba
 
 ```plantuml
 @startuml
-skinparam classAttributeIconSize 0
+title Modelo de Domínio com Métodos - CliqCompra
 
 abstract class Usuario {
   + id: Integer
@@ -28,25 +28,23 @@ abstract class Usuario {
   + email: String
   # senhaHash: String
   + cpfCnpj: String
-  + telefones: List<String>
++ nomeFantasia: String
+  + telefone: String
+  --
   + fazerLogin(email, senha): boolean
   + editarPerfil(): void
 }
 
 class Cliente extends Usuario {
-  + enderecos: List<Endereco>
+  --
   + cadastrar(): void
   + realizarPedido(pedido: Pedido): void
   + selecionarEnderecoEntrega(endereco: Endereco): void
   + visualizarPedidos(): List<Pedido>
-  + adicionarProdutoAoCarrinho(produto: Produto, quantidade: int): void
-}
-
-class Vendedor extends Usuario {
-  + cadastrar(): void
-  + cadastrarProduto(produto: Produto): void
-  + aplicarDescontoItem(item: ItemPedido, valorDesconto: double): void
-  + visualizarPedidos(): List<Pedido>
+  + adicionarProdutoAoCarrinho(produto: Produto, quant: int): void
+ + adicionarEndereco(Endereco): void
+  + adicionarProduto(Produto): void
+  + realizarPedido(Pedido): void
 }
 
 class Produto {
@@ -55,13 +53,9 @@ class Produto {
   + preco: double
   + descricao: String
   + fotoUrl: String
-  + adicionarCategoria(categoria: Categoria): void
-  + removerCategoria(categoria: Categoria): void
-}
-
-class Categoria {
-  + id: Integer
-  + nome: String
+  --
+  + addCategoria(categoria: Categoria): void
+  + removeCategoria(categoria: Categoria): void
 }
 
 class Pedido {
@@ -69,6 +63,7 @@ class Pedido {
   + dataRealizacao: Timestamp
   + status: StatusPedido
   + valorTotal: double
+  --
   + adicionarItem(produto: Produto, quantidade: int): void
   + removerItem(produto: Produto): void
   + calcularTotal(): double
@@ -88,14 +83,14 @@ enum StatusPedido {
 class ItemPedido {
   + id: Integer
   + quantidade: int
-  + precoUnitarioMomentoCompra: double
-  + subtotal: double
-  + descontoAplicado: double
+  + precoUnitario: double
+ --
+  + calcularSubtotal(): double
 }
 
 class Endereco {
-  + id: Integer
-  + rua: String
+ + id: int
+  + logradouro: String
   + numero: String
   + complemento: String
   + bairro: String
@@ -109,7 +104,9 @@ abstract class Pagamento {
   + valor: double
   + dataPagamento: Timestamp
   + status: StatusPagamento
-  + processarPagamento(): boolean
+  --
+  + realizarPagamento(): boolean
+  + reembolsar(): boolean
 }
 
 enum StatusPagamento {
@@ -122,33 +119,55 @@ enum StatusPagamento {
 class PagamentoBoleto extends Pagamento {
   + codigoBarras: String
   + dataVencimento: Date
+  --
   + emitirBoleto(): void
+  + processarPagamento(): boolean
 }
 
 class PagamentoCartao extends Pagamento {
   + numeroCartaoToken: String
   + nomeTitular: String
-  + dataValidade: String
   + numeroParcelas: int
+  --
   + registrarPagamentoCartao(): void
+  + processarPagamento(): boolean
 }
 
-' Relacionamentos
-Usuario <|-- Cliente
-Usuario <|-- Vendedor
+class Carrinho {
+    + id: int
+  + dataCriação: Date
+  --
+  + adicionarItem(ItemCarrinho): void
+  + removerItem(ItemCarrinho): void
+  + calcularTotal(): double
+}
 
-Cliente "1" -- "*" Endereco : possui >
-Cliente "1" -- "0..*" Pedido : faz >
-Vendedor "1" -- "0..*" Produto : cadastra <
-' Ou melhor: Usuario "1" -- "0..*" Produto : cadastra > (Produto tem um ManyToOne para Usuario)
+class ItemCarrinho {
+    + id: int
+  + quantidade: int
+  + precoUnitario: double
+  --
+  + calcularSubtotal(): double
+}
 
-Pedido "1" -- "1" Cliente : feito por <
-Pedido "1" -- "1" Endereco : entregue em >
-Pedido "1" o-- "1..*" ItemPedido : contém (Composição)
-ItemPedido "1" -- "1" Produto : refere-se a >
-Produto "1" -- "0..*" Categoria : pertence a (ManyToMany)
 
-Pedido "1" -- "1" Pagamento : pago com >
+' --- Relacionamentos ---
+
+Usuario "1" o-- "0..1" Carrinho : tem
+Usuario "1" -- "0..*" Produto : cadastra
+
+Cliente "1" -- "0..*" Pedido : faz
+Cliente "1" -- "0..*" Endereco : possui
+
+Carrinho "1" -- "0.." ItemCarrinho : contém
+ItemCarrinho "1" -- "1" Produto : refere-se a
+
+Pedido "1" -- "1" Cliente
+Pedido "1" -- "1" Endereco : entregue em
+ItemPedido "1" -- "1" Produto
+
+
+Pedido "1" o-- "0..1" Pagamento : pago com
 @enduml
 ```
 
