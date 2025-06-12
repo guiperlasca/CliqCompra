@@ -902,8 +902,7 @@ public class WebController {
             shoppingCartService.clearCart(cliente); // Pass cliente to clearCart
             session.removeAttribute("selectedEnderecoId"); // Clear selected address from session
             redirectAttributes.addFlashAttribute("successMessage", "Pedido realizado com sucesso! O ID do seu pedido é: " + pedidoSalvo.getId());
-            // TODO: Create this confirmation page in a later step
-            return "redirect:/checkout/order/" + pedidoSalvo.getId() + "/confirmation";
+            return "redirect:/pagamento/pedido/" + pedidoSalvo.getId() + "/escolher";
         } catch (Exception e) {
             // Log e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", "Erro ao fazer o pedido. Por favor, tente novamente. " + e.getMessage());
