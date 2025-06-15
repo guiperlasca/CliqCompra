@@ -21,10 +21,12 @@ import com.trabalho.cliqaqui.service.PasswordService;
 import com.trabalho.cliqaqui.service.ProdutoService;
 import com.trabalho.cliqaqui.service.ShoppingCartService; // Added import
 import com.trabalho.cliqaqui.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.security.crypto.password.PasswordEncoder; // Removed import
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable; // Added import
@@ -276,7 +278,8 @@ public class WebController {
     }
 
     @PostMapping("/produtos/add") // Renamed mapping
-    public String processAddProduct(@ModelAttribute("produtoDto") ProdutoDTO produtoDto,
+    public String processAddProduct(@Valid @ModelAttribute("produtoDto") ProdutoDTO produtoDto,
+                                    BindingResult bindingResult,
                                     @RequestParam(name = "fotoFile", required = false) MultipartFile fotoFile,
                                     HttpSession session,
                                     RedirectAttributes redirectAttributes,
@@ -290,17 +293,22 @@ public class WebController {
             return "redirect:/login";
         }
 
-        // TODO: Add validation for produtoDto here. If errors:
-        // model.addAttribute("errorMessage", "Please correct the errors below.");
-        // model.addAttribute("produtoDto", produtoDto); // Send DTO back with submitted values
-        // // Re-populate login status for layout
-        // String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
-        // model.addAttribute("isUserLoggedIn", loggedInUserEmail != null);
-        // if (loggedInUserEmail != null) {
-        //     model.addAttribute("loggedInUserEmail", loggedInUserEmail);
-        //     model.addAttribute("loggedInUserType", userType);
-        // }
-        // return "vendedor/add-product"; // Return to form if validation fails
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("allCategorias", categoriaRepository.findAllByOrderByNomeAsc());
+            // Re-populate login status for layout consistency on error page
+            String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+            if (loggedInUserEmail != null) {
+                model.addAttribute("isUserLoggedIn", true);
+                model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+                model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+                model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
+            } else {
+                // Should not happen if loggedInUserId is not null, but good for safety
+                model.addAttribute("isUserLoggedIn", false);
+            }
+            model.addAttribute("produtoDto", produtoDto); // Send DTO back with submitted values and errors
+            return "produto/add-product"; // Return to form if validation fails
+        }
 
         // Fetch the Usuario entity
         Optional<Usuario> optionalUsuario = usuarioRepository.findById(loggedInUserId);
@@ -349,11 +357,21 @@ public class WebController {
 
             } catch (IOException e) {
                 // Log the error: e.g., e.printStackTrace();
-                // Optionally, add a specific error message to redirectAttributes or model for photo upload failure
-                model.addAttribute("errorMessage", "Falha no upload da foto, produto salvo sem foto. Erro: " + e.getMessage());
-                // If you want to stop product creation on photo error, uncomment below and comment out the model.addAttribute above
-                // redirectAttributes.addFlashAttribute("errorMessage", "Falha no upload da foto: " + e.getMessage());
-                // return "redirect:/produtos/add";
+                produto.setFotoUrl(null); // Ensure no invalid URL is stored
+                model.addAttribute("errorMessage", "Falha no upload da foto. Verifique o arquivo e tente novamente. Erro: " + e.getMessage());
+                model.addAttribute("produtoDto", produtoDto); // Retain form data
+                model.addAttribute("allCategorias", categoriaRepository.findAllByOrderByNomeAsc());
+                // Re-populate login status for layout
+                String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+                if (loggedInUserEmail != null) {
+                    model.addAttribute("isUserLoggedIn", true);
+                    model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+                    model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+                    model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
+                } else {
+                    model.addAttribute("isUserLoggedIn", false);
+                }
+                return "produto/add-product";
             }
         } else {
             produto.setFotoUrl(null); // Or some default photo path

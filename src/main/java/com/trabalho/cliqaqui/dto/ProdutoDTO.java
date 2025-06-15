@@ -1,5 +1,6 @@
 package com.trabalho.cliqaqui.dto;
 
+import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 public class ProdutoDTO {
     private String nome;
     private double preco;
+    @Size(max = 1000, message = "A descrição não pode exceder 1000 caracteres.")
     private String descricao;
     private MultipartFile fotoFile;
     private List<Integer> categoriaIds = new ArrayList<>(); // Initialize to prevent NPE
