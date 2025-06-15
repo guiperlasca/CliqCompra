@@ -49,6 +49,7 @@ import java.time.Instant; // Added import
 import java.util.ArrayList; // Added import
 import java.util.List;
 import java.util.Optional; // Added import
+import java.util.stream.Collectors;
 
 @Controller
 public class WebController {
@@ -464,6 +465,159 @@ public class WebController {
         }
 
         return "produto/my-products";
+    }
+
+    @GetMapping("/produtos/edit/{id}")
+    public String showEditProductForm(@PathVariable("id") Integer productId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Você precisa estar logado para editar produtos.");
+            return "redirect:/login";
+        }
+
+        Optional<Produto> optionalProduto = produtoService.buscarProdutoPorId(productId);
+        if (optionalProduto.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Produto não encontrado.");
+            return "redirect:/produtos/my"; // Or another appropriate page
+        }
+        Produto produto = optionalProduto.get();
+
+        if (produto.getUsuario() == null || !produto.getUsuario().getId().equals(loggedInUserId)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Você não tem permissão para editar este produto.");
+            return "redirect:/produtos/my"; // Or another appropriate page
+        }
+
+        ProdutoDTO produtoDto = new ProdutoDTO();
+        produtoDto.setNome(produto.getNome());
+        produtoDto.setPreco(produto.getPreco());
+        produtoDto.setDescricao(produto.getDescricao());
+        if (produto.getCategorias() != null) {
+            produtoDto.setCategoriaIds(produto.getCategorias().stream().map(Categoria::getId).collect(Collectors.toList()));
+        }
+
+        model.addAttribute("produtoDto", produtoDto);
+        model.addAttribute("productId", productId);
+        model.addAttribute("currentFotoUrl", produto.getFotoUrl()); // To display current image
+        model.addAttribute("allCategorias", categoriaRepository.findAllByOrderByNomeAsc());
+
+        // Add common layout attributes
+        String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+        model.addAttribute("isUserLoggedIn", true);
+        model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+        model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+        model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
+
+        return "produto/edit-product";
+    }
+
+    @PostMapping("/produtos/edit/{id}")
+    public String processEditProduct(@PathVariable("id") Integer productId,
+                                     @Valid @ModelAttribute("produtoDto") ProdutoDTO produtoDto,
+                                     BindingResult bindingResult,
+                                     @RequestParam(name = "fotoFile", required = false) MultipartFile fotoFile,
+                                     Model model,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+
+        Integer loggedInUserId = (Integer) session.getAttribute("loggedInUserId");
+        if (loggedInUserId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Sessão expirada. Por favor, faça login novamente.");
+            return "redirect:/login";
+        }
+
+        Optional<Produto> optionalProduto = produtoService.buscarProdutoPorId(productId);
+        if (optionalProduto.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Produto não encontrado.");
+            return "redirect:/produtos/my";
+        }
+        Produto produto = optionalProduto.get();
+        if (produto.getUsuario() == null || !produto.getUsuario().getId().equals(loggedInUserId)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Você não tem permissão para editar este produto.");
+            return "redirect:/produtos/my";
+        }
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("allCategorias", categoriaRepository.findAllByOrderByNomeAsc());
+            model.addAttribute("productId", productId);
+            model.addAttribute("currentFotoUrl", produto.getFotoUrl()); // Keep showing current photo
+            String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+            model.addAttribute("isUserLoggedIn", true);
+            model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+            model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+            model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
+            model.addAttribute("produtoDto", produtoDto); // Send DTO back with submitted values and errors
+            return "produto/edit-product";
+        }
+
+        produto.setNome(produtoDto.getNome());
+        produto.setPreco(produtoDto.getPreco());
+        produto.setDescricao(produtoDto.getDescricao());
+
+        List<Integer> categoriaIds = produtoDto.getCategoriaIds();
+        if (categoriaIds != null && !categoriaIds.isEmpty()) {
+            List<Categoria> fetchedCategorias = categoriaRepository.findAllById(categoriaIds);
+            produto.setCategorias(fetchedCategorias);
+        } else {
+            produto.setCategorias(new ArrayList<>());
+        }
+
+        if (fotoFile != null && !fotoFile.isEmpty()) {
+            try {
+                // Optional: Delete old photo
+                // String oldFotoUrl = produto.getFotoUrl();
+                // if (oldFotoUrl != null && !oldFotoUrl.isBlank()) {
+                //     Path oldFilePath = Paths.get(UPLOAD_DIR_STATIC_RESOURCES, oldFotoUrl.replace(UPLOAD_DIR_WEB_PATH, ""));
+                //     Files.deleteIfExists(oldFilePath);
+                // }
+
+                Path uploadPath = Paths.get(UPLOAD_DIR_STATIC_RESOURCES);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                String originalFileName = fotoFile.getOriginalFilename();
+                String fileExtension = "";
+                if (originalFileName != null && originalFileName.contains(".")) {
+                    fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+                }
+                String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
+                Path filePath = uploadPath.resolve(uniqueFileName);
+                Files.copy(fotoFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                produto.setFotoUrl(UPLOAD_DIR_WEB_PATH + uniqueFileName);
+            } catch (IOException e) {
+                // Log the error: e.printStackTrace();
+                model.addAttribute("allCategorias", categoriaRepository.findAllByOrderByNomeAsc());
+                model.addAttribute("productId", productId);
+                model.addAttribute("currentFotoUrl", produto.getFotoUrl()); // Show original photo
+                model.addAttribute("errorMessage", "Falha no upload da nova foto: " + e.getMessage());
+                String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+                model.addAttribute("isUserLoggedIn", true);
+                model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+                model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+                model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
+                model.addAttribute("produtoDto", produtoDto);
+                return "produto/edit-product";
+            }
+        }
+        // If fotoFile is null or empty, the existing produto.getFotoUrl() remains unchanged.
+
+        try {
+            produtoService.salvarProduto(produto);
+            redirectAttributes.addFlashAttribute("successMessage", "Produto atualizado com sucesso!");
+            return "redirect:/produtos/my";
+        } catch (Exception e) {
+            // Log e.printStackTrace();
+            model.addAttribute("allCategorias", categoriaRepository.findAllByOrderByNomeAsc());
+            model.addAttribute("productId", productId);
+            model.addAttribute("currentFotoUrl", produto.getFotoUrl());
+            model.addAttribute("errorMessage", "Erro ao atualizar produto: " + e.getMessage());
+            String loggedInUserEmail = (String) session.getAttribute("loggedInUserEmail");
+            model.addAttribute("isUserLoggedIn", true);
+            model.addAttribute("loggedInUserEmail", loggedInUserEmail);
+            model.addAttribute("loggedInUserName", session.getAttribute("loggedInUserName"));
+            model.addAttribute("loggedInUserType", session.getAttribute("loggedInUserType"));
+            model.addAttribute("produtoDto", produtoDto);
+            return "produto/edit-product";
+        }
     }
     // } Closing brace removed here
 

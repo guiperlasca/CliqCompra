@@ -16,8 +16,7 @@
             <p th:text="${successMessage}"></p>
         </div>
 
-        <form th:action="@{/produtos/edit/{id}(id=${produtoDto.id})}" th:object="${produtoDto}" method="post" enctype="multipart/form-data">
-            <input type="hidden" th:field="*{id}" /> <!-- Ensure ID is submitted for update -->
+        <form th:action="@{/produtos/edit/{id}(id=${productId})}" th:object="${produtoDto}" method="post" enctype="multipart/form-data">
             <div>
                 <label for="nome">Nome do Produto:</label>
                 <input type="text" id="nome" th:field="*{nome}" required />
@@ -31,15 +30,15 @@
             <div>
                 <label for="descricao">Descrição:</label>
                 <textarea id="descricao" th:field="*{descricao}" rows="4" required></textarea>
-                <!-- TODO: Add validation error display here later if needed -->
+                <div th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}" class="alert alert-danger">Error de Descrição</div>
             </div>
 
             <div>
                 <label>Foto Atual:</label>
-                <div th:if="${produtoDto.currentFotoUrl != null and not #strings.isEmpty(produtoDto.currentFotoUrl)}">
-                    <img th:src="@{${produtoDto.currentFotoUrl}}" alt="Foto Atual do Produto" style="width:150px; height:auto; margin-bottom:10px;" />
+                <div th:if="${currentFotoUrl != null and not #strings.isEmpty(currentFotoUrl)}">
+                    <img th:src="@{${currentFotoUrl}}" alt="Foto Atual do Produto" style="width:150px; height:auto; margin-bottom:10px;" />
                 </div>
-                <div th:if="${produtoDto.currentFotoUrl == null or #strings.isEmpty(produtoDto.currentFotoUrl)}">
+                <div th:if="${currentFotoUrl == null or #strings.isEmpty(currentFotoUrl)}">
                     <p>Nenhuma foto cadastrada.</p>
                 </div>
             </div>
