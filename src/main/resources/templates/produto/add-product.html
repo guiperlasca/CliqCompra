@@ -30,7 +30,7 @@
             <div>
                 <label for="descricao">Descrição:</label>
                 <textarea id="descricao" th:field="*{descricao}" rows="4" required></textarea>
-                <!-- TODO: Add validation error display here later if needed -->
+                <div th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}" class="alert alert-danger">Error</div>
             </div>
             <div>
                 <label for="fotoFile">Foto do Produto:</label>

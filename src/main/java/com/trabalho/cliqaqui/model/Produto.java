@@ -12,6 +12,7 @@ public class Produto {
     private Integer id;
     private String nome;
     private double preco;
+    @Column(length = 1000)
     private String descricao;
     private String fotoUrl;
 
